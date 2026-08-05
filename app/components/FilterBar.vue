@@ -1,58 +1,66 @@
 <script setup lang="ts">
-import { SEASONS } from '~/utils/types'
-import { REGIONS } from '~/composables/useHordes'
+import { SEASONS, REGIONS } from '~/utils/types'
+import { REGION_LABELS, SEASON_LABELS, resultCountLabel } from '~/i18n/translations'
 
-const { hordeSize, season, region, search, resultCount, resetFilters } = useHordes()
+const { hordeSize, season, region, location, locationOptions, search, resultCount, resetFilters } = useHordes()
+const { locale, t } = useLocale()
 const shiny = useShiny()
-
-const SEASON_LABELS: Record<string, string> = {
-  Spring: '🌸 Printemps',
-  Summer: '☀️ Été',
-  Autumn: '🍂 Automne',
-  Winter: '❄️ Hiver',
-}
 </script>
 
 <template>
   <div class="flex flex-wrap items-end gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
     <label class="flex flex-col gap-1 text-sm">
-      <span class="text-neutral-400">Horde</span>
+      <span class="text-neutral-400">{{ t.labelHorde }}</span>
       <select v-model="hordeSize" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
-        <option value="all">Toutes</option>
-        <option :value="3">Horde x3</option>
-        <option :value="5">Horde x5</option>
+        <option value="all">{{ t.all }}</option>
+        <option :value="3">{{ t.horde3 }}</option>
+        <option :value="5">{{ t.horde5 }}</option>
       </select>
     </label>
 
     <label class="flex flex-col gap-1 text-sm">
-      <span class="text-neutral-400">Saison</span>
+      <span class="text-neutral-400">{{ t.labelSeason }}</span>
       <select v-model="season" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
-        <option value="all">Toutes</option>
-        <option v-for="s in SEASONS" :key="s" :value="s">{{ SEASON_LABELS[s] }}</option>
+        <option value="all">{{ t.all }}</option>
+        <option v-for="s in SEASONS" :key="s" :value="s">{{ SEASON_LABELS[locale][s] }}</option>
       </select>
     </label>
 
     <label class="flex flex-col gap-1 text-sm">
-      <span class="text-neutral-400">Région</span>
+      <span class="text-neutral-400">{{ t.labelRegion }}</span>
       <select v-model="region" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
-        <option value="all">Toutes</option>
-        <option v-for="r in REGIONS" :key="r" :value="r">{{ r }}</option>
+        <option value="all">{{ t.all }}</option>
+        <option v-for="r in REGIONS" :key="r" :value="r">{{ REGION_LABELS[locale][r] }}</option>
       </select>
     </label>
 
     <label class="flex flex-col gap-1 text-sm">
-      <span class="text-neutral-400">Pokémon</span>
+      <span class="text-neutral-400">{{ t.labelLocation }}</span>
+      <input
+        v-model="location"
+        type="text"
+        list="location-options"
+        :placeholder="t.locationPlaceholder"
+        class="w-48 rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100 placeholder:text-neutral-500"
+      >
+      <datalist id="location-options">
+        <option v-for="loc in locationOptions" :key="loc" :value="loc" />
+      </datalist>
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm">
+      <span class="text-neutral-400">{{ t.labelPokemon }}</span>
       <input
         v-model="search"
         type="text"
-        placeholder="Nom..."
+        :placeholder="t.pokemonPlaceholder"
         class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100 placeholder:text-neutral-500"
       >
     </label>
 
     <label class="flex cursor-pointer items-center gap-2 text-sm text-neutral-400">
       <input v-model="shiny" type="checkbox" class="h-4 w-4 accent-amber-400">
-      ✨ Sprites shiny
+      {{ t.shinyToggle }}
     </label>
 
     <button
@@ -60,11 +68,11 @@ const SEASON_LABELS: Record<string, string> = {
       class="rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-400 hover:bg-neutral-800"
       @click="resetFilters"
     >
-      Réinitialiser
+      {{ t.reset }}
     </button>
 
     <span class="ml-auto text-sm text-neutral-500">
-      {{ resultCount }} rencontre(s)
+      {{ resultCountLabel(locale, resultCount) }}
     </span>
   </div>
 </template>

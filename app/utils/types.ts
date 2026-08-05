@@ -12,9 +12,11 @@ export interface Rarity {
 export interface HordeRecord {
   pokemonId: number
   pokemonName: string
+  pokemonNameFr: string
   types: string[]
   region: string
   location: string
+  locationFr: string
   season: Season
   hordeSize: HordeSize
   encounterType: string
@@ -23,15 +25,19 @@ export interface HordeRecord {
   rarity: Rarity
 }
 
+export interface SeasonRarity {
+  season: Season
+  rarity: Rarity
+}
+
 export interface ZoneEntry {
   pokemonId: number
   pokemonName: string
   types: string[]
   hordeSize: HordeSize
-  seasons: Season[]
+  seasonRarities: SeasonRarity[]
   minLevel: number
   maxLevel: number
-  rarity: Rarity
 }
 
 export interface Zone {
@@ -39,6 +45,10 @@ export interface Zone {
   location: string
   entries: ZoneEntry[]
 }
+
+// Region keys are the canonical (English) names used throughout the data.
+// Fixed display order, independent of locale.
+export const REGIONS = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova'] as const
 
 export const TYPE_COLORS: Record<string, string> = {
   NORMAL: 'bg-neutral-400',

@@ -1,21 +1,40 @@
 import rawHordes from '~/data/hordes.json'
+import { SEASONS } from '~/utils/types'
 import type { HordeRecord, Season, HordeSize, Zone, ZoneEntry } from '~/utils/types'
 
 const records = rawHordes as HordeRecord[]
 
-export const REGIONS = [...new Set(records.map(r => r.region))].sort()
-
 export function useHordes() {
+  const { locale } = useLocale()
+
   const hordeSize = useState<'all' | HordeSize>('filter-horde-size', () => 'all')
   const season = useState<'all' | Season>('filter-season', () => 'all')
   const region = useState<'all' | string>('filter-region', () => 'all')
+  const location = useState('filter-location', () => '')
   const search = useState('filter-search', () => '')
+
+  // A localized location search is meaningless once the language changes.
+  watch(locale, () => { location.value = '' })
+
+  function pokemonName(r: HordeRecord) {
+    return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
+  }
+
+  function locationName(r: HordeRecord) {
+    return locale.value === 'fr' ? r.locationFr : r.location
+  }
+
+  const locationOptions = computed(() => {
+    const names = new Set(records.map(locationName))
+    return [...names].sort((a, b) => a.localeCompare(b))
+  })
 
   const filtered = computed(() => records.filter((r) => {
     if (hordeSize.value !== 'all' && r.hordeSize !== hordeSize.value) return false
     if (season.value !== 'all' && r.season !== season.value) return false
     if (region.value !== 'all' && r.region !== region.value) return false
-    if (search.value && !r.pokemonName.toLowerCase().includes(search.value.trim().toLowerCase())) return false
+    if (location.value && !locationName(r).toLowerCase().includes(location.value.trim().toLowerCase())) return false
+    if (search.value && !pokemonName(r).toLowerCase().includes(search.value.trim().toLowerCase())) return false
     return true
   }))
 
@@ -25,7 +44,7 @@ export function useHordes() {
     for (const r of filtered.value) {
       const zoneKey = `${r.region}__${r.location}`
       if (!zoneMap.has(zoneKey)) {
-        zoneMap.set(zoneKey, { region: r.region, location: r.location, entries: new Map() })
+        zoneMap.set(zoneKey, { region: r.region, location: locationName(r), entries: new Map() })
       }
       const zone = zoneMap.get(zoneKey)!
 
@@ -33,17 +52,18 @@ export function useHordes() {
       if (!zone.entries.has(entryKey)) {
         zone.entries.set(entryKey, {
           pokemonId: r.pokemonId,
-          pokemonName: r.pokemonName,
+          pokemonName: pokemonName(r),
           types: r.types,
           hordeSize: r.hordeSize,
-          seasons: [],
+          seasonRarities: [],
           minLevel: r.minLevel,
           maxLevel: r.maxLevel,
-          rarity: r.rarity,
         })
       }
       const entry = zone.entries.get(entryKey)!
-      if (!entry.seasons.includes(r.season)) entry.seasons.push(r.season)
+      if (!entry.seasonRarities.some(sr => sr.season === r.season)) {
+        entry.seasonRarities.push({ season: r.season, rarity: r.rarity })
+      }
       entry.minLevel = Math.min(entry.minLevel, r.minLevel)
       entry.maxLevel = Math.max(entry.maxLevel, r.maxLevel)
     }
@@ -52,7 +72,12 @@ export function useHordes() {
       .map(z => ({
         region: z.region,
         location: z.location,
-        entries: [...z.entries.values()].sort((a, b) => a.pokemonName.localeCompare(b.pokemonName)),
+        entries: [...z.entries.values()]
+          .map(e => ({
+            ...e,
+            seasonRarities: [...e.seasonRarities].sort((a, b) => SEASONS.indexOf(a.season) - SEASONS.indexOf(b.season)),
+          }))
+          .sort((a, b) => a.pokemonName.localeCompare(b.pokemonName)),
       }))
       .sort((a, b) => a.region.localeCompare(b.region) || a.location.localeCompare(b.location))
   })
@@ -63,8 +88,9 @@ export function useHordes() {
     hordeSize.value = 'all'
     season.value = 'all'
     region.value = 'all'
+    location.value = ''
     search.value = ''
   }
 
-  return { hordeSize, season, region, search, zones, resultCount, resetFilters }
+  return { hordeSize, season, region, location, locationOptions, search, zones, resultCount, resetFilters }
 }
