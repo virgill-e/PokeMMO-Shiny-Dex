@@ -71,30 +71,6 @@ SUFFIX_TRANSLATIONS_FR = {
 
 LOCATION_SUFFIX_RE = re.compile(r"^(.*?)\s*\((.+)\)\s*$")
 
-# For horde encounters, pokemmo-hub's rarity_* fields are the raw table share
-# (max observed: 5%) except for "Sweet Scent" hordes, which are already the
-# real percentage (Sweet Scent guarantees an encounter, so its odds sum to
-# 100% on their own). The other encounter types' values need x20 to match
-# the actual in-game odds.
-HORDE_RARITY_SCALE = 20
-
-
-def scale_percent(value):
-    if not value or not value.endswith("%"):
-        return value
-    try:
-        num = float(value[:-1])
-    except ValueError:
-        return value
-    scaled = num * HORDE_RARITY_SCALE
-    return f"{scaled:g}%"
-
-
-def scale_horde_rarity(rarity, encounter_type):
-    if encounter_type == "Sweet Scent":
-        return rarity
-    return {k: scale_percent(v) for k, v in rarity.items()}
-
 
 def fetch_json(url):
     with urllib.request.urlopen(url) as resp:
@@ -164,11 +140,7 @@ def extract_records(monsters, fr_monster, fr_locations):
             if horde_size is None:
                 singles.append(record)
             else:
-                hordes.append({
-                    **record,
-                    "hordeSize": horde_size,
-                    "rarity": scale_horde_rarity(record["rarity"], record["encounterType"]),
-                })
+                hordes.append({**record, "hordeSize": horde_size})
 
     return hordes, singles
 

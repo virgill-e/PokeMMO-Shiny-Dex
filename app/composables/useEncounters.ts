@@ -4,6 +4,15 @@ import type { Locale } from '~/i18n/translations'
 
 const PAGE_SIZE = 24
 
+export type TimeOfDayFilter = 'all' | 'allday' | TimeOfDay
+
+// Horde rarity_* values are a raw table share (max 5%), except "Sweet Scent"
+// hordes which guarantee an encounter and are already the real percentage
+// (max 100%). Either way, this is the value that means "100% real chance".
+function guaranteedValue(encounterType: string) {
+  return encounterType === 'Sweet Scent' ? '100%' : '5%'
+}
+
 // singles.json is ~8MB: fetched at runtime instead of bundled, and only for
 // the mode currently in use. Cached at module scope (a plain Promise map,
 // not Vue state) so switching modes back and forth never re-fetches.
@@ -74,6 +83,7 @@ export function useEncounters() {
   async function setMode(next: EncounterMode) {
     mode.value = next
     hordeSize.value = 'all'
+    guaranteedOnly.value = false
     visibleCount.value = PAGE_SIZE
     await ensureLoaded(next)
   }
@@ -83,13 +93,15 @@ export function useEncounters() {
   const region = useState<'all' | string>('filter-region', () => 'all')
   const location = useState('filter-location', () => '')
   const search = useState('filter-search', () => '')
+  const timeOfDay = useState<TimeOfDayFilter>('filter-time-of-day', () => 'all')
+  const guaranteedOnly = useState('filter-guaranteed-only', () => false)
   const visibleCount = useState('visible-zone-count', () => PAGE_SIZE)
 
   // A localized location search is meaningless once the language changes.
   watch(locale, () => { location.value = '' })
 
   // Any change of query should start back from the top of the results.
-  watch([hordeSize, season, region, location, search], () => { visibleCount.value = PAGE_SIZE })
+  watch([hordeSize, season, region, location, search, timeOfDay, guaranteedOnly], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: EncounterRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -110,6 +122,21 @@ export function useEncounters() {
     if (region.value !== 'all' && r.region !== region.value) return false
     if (location.value && !locationName(r).toLowerCase().includes(location.value.trim().toLowerCase())) return false
     if (search.value && !pokemonName(r).toLowerCase().includes(search.value.trim().toLowerCase())) return false
+
+    if (timeOfDay.value === 'allday') {
+      if (r.rarity.morning === '--' || r.rarity.day === '--' || r.rarity.night === '--') return false
+    } else if (timeOfDay.value !== 'all') {
+      if (r.rarity[timeOfDay.value] === '--') return false
+    }
+
+    if (mode.value === 'hordes' && guaranteedOnly.value) {
+      const target = guaranteedValue(r.encounterType)
+      const fields: TimeOfDay[] = timeOfDay.value === 'all' || timeOfDay.value === 'allday'
+        ? ['morning', 'day', 'night']
+        : [timeOfDay.value]
+      if (!fields.some(f => r.rarity[f] === target)) return false
+    }
+
     return true
   }))
 
@@ -178,6 +205,8 @@ export function useEncounters() {
     region.value = 'all'
     location.value = ''
     search.value = ''
+    timeOfDay.value = 'all'
+    guaranteedOnly.value = false
   }
 
   // Other pokemon sharing the exact same slot (zone + encounter type + horde
@@ -205,6 +234,8 @@ export function useEncounters() {
     location,
     locationOptions,
     search,
+    timeOfDay,
+    guaranteedOnly,
     zones,
     visibleZones,
     hasMoreZones,
