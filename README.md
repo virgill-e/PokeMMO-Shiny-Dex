@@ -1,75 +1,50 @@
-# Nuxt Minimal Starter
+# PokeMMO Shiny Dex
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A tool to find shiny-farmable Pokémon hordes in [PokeMMO](https://pokemmo.com/), filterable by horde size, season, region and location, and grouped by zone so you can see everything catchable in one spot at a glance.
 
-## Setup
+🔗 [github.com/virgill-e/PokeMMO-Shiny-Dex](https://github.com/virgill-e/PokeMMO-Shiny-Dex)
 
-Make sure to install dependencies:
+## Features
+
+- **Filters**: horde size (x3 / x5), season, region, location (with autocomplete), Pokémon name
+- **Zone view**: Pokémon grouped by location, with per-season encounter rates (morning / day / night) and the encounter method (Grass, Dark Grass, Water, Cave...)
+- **Shared horde slots**: hover/tap a rarity value to see which other Pokémon share that exact spot, encounter type, horde size and season
+- **Shiny sprite toggle**
+- **French / English**, with the language choice remembered in your browser
+
+## Data sources
+
+- Encounter data (locations, seasons, horde flags, rarities) and French translations: extracted from [PokeMMO-Tools/pokemmo-hub](https://github.com/PokeMMO-Tools/pokemmo-hub) — see [`scripts/extract-data.py`](scripts/extract-data.py)
+- Sprites: [PokeAPI](https://pokeapi.co/)
+
+## Tech stack
+
+Nuxt 4, Vue 3, Tailwind CSS.
+
+## Development
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+npm run dev
 ```
 
-## Development Server
+Open `http://localhost:3000`.
 
-Start the development server on `http://localhost:3000`:
+To refresh the encounter data from pokemmo-hub:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+python3 scripts/extract-data.py
 ```
 
 ## Production
 
-Build the application for production:
-
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+node .output/server/index.mjs
 ```
 
-Locally preview production build:
+A `Dockerfile` is included for container-based deployment (e.g. Dokploy).
 
-```bash
-# npm
-npm run preview
+## Credits
 
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Built with [Claude Code](https://claude.com/claude-code).
