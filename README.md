@@ -22,6 +22,8 @@ A tool to find shiny-farmable Pokémon hordes in [PokeMMO](https://pokemmo.com/)
 - Encounter data (locations, seasons, horde flags, rarities) and French translations: extracted from [PokeMMO-Tools/pokemmo-hub](https://github.com/PokeMMO-Tools/pokemmo-hub) — see [`scripts/extract-data.py`](scripts/extract-data.py)
 - Sprites: [PokeAPI](https://pokeapi.co/)
 
+If you have any concern about how this data is used here, contact me at [virgill-e.com](https://virgill-e.com/#contact).
+
 ## Tech stack
 
 Nuxt 4, Vue 3, Tailwind CSS.
