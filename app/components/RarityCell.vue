@@ -9,7 +9,7 @@ const props = defineProps<{
   value: string
 }>()
 
-const { siblingsFor } = useHordes()
+const { siblingsFor } = useEncounters()
 const { toggle, isOpen } = useRarityTooltip()
 const { t } = useLocale()
 

@@ -2,14 +2,14 @@
 import { SEASONS, REGIONS } from '~/utils/types'
 import { REGION_LABELS, SEASON_LABELS, resultCountLabel } from '~/i18n/translations'
 
-const { hordeSize, season, region, location, locationOptions, search, resultCount, resetFilters } = useHordes()
+const { mode, hordeSize, season, region, location, locationOptions, search, resultCount, resetFilters } = useEncounters()
 const { locale, t } = useLocale()
 const shiny = useShiny()
 </script>
 
 <template>
   <div class="flex flex-wrap items-end gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4">
-    <label class="flex flex-col gap-1 text-sm">
+    <label v-if="mode === 'hordes'" class="flex flex-col gap-1 text-sm">
       <span class="text-neutral-400">{{ t.labelHorde }}</span>
       <select v-model="hordeSize" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
         <option value="all">{{ t.all }}</option>

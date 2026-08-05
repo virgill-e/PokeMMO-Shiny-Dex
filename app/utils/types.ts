@@ -9,7 +9,11 @@ export interface Rarity {
   night: string
 }
 
-export interface HordeRecord {
+export type EncounterMode = 'hordes' | 'singles'
+
+// hordeSize is only present on records from hordes.json; singles.json records
+// don't have it at all (regular wild encounters aren't hordes).
+export interface EncounterRecord {
   pokemonId: number
   pokemonName: string
   pokemonNameFr: string
@@ -18,7 +22,7 @@ export interface HordeRecord {
   location: string
   locationFr: string
   season: Season
-  hordeSize: HordeSize
+  hordeSize?: HordeSize
   encounterType: string
   minLevel: number
   maxLevel: number
@@ -34,7 +38,7 @@ export interface ZoneEntry {
   pokemonId: number
   pokemonName: string
   types: string[]
-  hordeSize: HordeSize
+  hordeSize?: HordeSize
   encounterType: string
   seasonRarities: SeasonRarity[]
   minLevel: number

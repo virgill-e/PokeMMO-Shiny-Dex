@@ -37,6 +37,7 @@ const { locale, t } = useLocale()
           </span>
 
           <span
+            v-if="entry.hordeSize"
             class="rounded-full px-2 py-0.5 text-xs font-semibold"
             :class="entry.hordeSize === 5 ? 'bg-rose-900 text-rose-200' : 'bg-sky-900 text-sky-200'"
           >

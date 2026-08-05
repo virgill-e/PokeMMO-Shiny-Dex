@@ -1,9 +1,12 @@
 <script setup lang="ts">
-const { zones, visibleZones, hasMoreZones, loadMoreZones } = useHordes()
+const { mode, setMode, loading, ensureLoaded, zones, visibleZones, hasMoreZones, loadMoreZones } = useEncounters()
 const { locale, setLocale, t } = useLocale()
 
 const { close } = useRarityTooltip()
-onMounted(() => document.addEventListener('click', close))
+onMounted(() => {
+  document.addEventListener('click', close)
+  ensureLoaded(mode.value)
+})
 onUnmounted(() => document.removeEventListener('click', close))
 </script>
 
@@ -37,10 +40,35 @@ onUnmounted(() => document.removeEventListener('click', close))
       </div>
     </header>
 
+    <div class="flex gap-2 px-6 pt-4">
+      <button
+        type="button"
+        class="flex-1 rounded-lg border px-4 py-3 text-left transition"
+        :class="mode === 'hordes' ? 'border-amber-500 bg-amber-500/10' : 'border-neutral-800 bg-neutral-900 hover:bg-neutral-800'"
+        @click="setMode('hordes')"
+      >
+        <p class="font-semibold" :class="mode === 'hordes' ? 'text-amber-400' : 'text-neutral-100'">{{ t.modeHordes }}</p>
+        <p class="text-xs text-neutral-500">{{ t.modeHordesHint }}</p>
+      </button>
+      <button
+        type="button"
+        class="flex-1 rounded-lg border px-4 py-3 text-left transition"
+        :class="mode === 'singles' ? 'border-amber-500 bg-amber-500/10' : 'border-neutral-800 bg-neutral-900 hover:bg-neutral-800'"
+        @click="setMode('singles')"
+      >
+        <p class="font-semibold" :class="mode === 'singles' ? 'text-amber-400' : 'text-neutral-100'">{{ t.modeSingles }}</p>
+        <p class="text-xs text-neutral-500">{{ t.modeSinglesHint }}</p>
+      </button>
+    </div>
+
     <main class="flex flex-col gap-4 p-6">
       <FilterBar />
 
-      <p v-if="zones.length === 0" class="py-12 text-center text-neutral-500">
+      <p v-if="loading" class="py-12 text-center text-neutral-500">
+        {{ t.loading }}
+      </p>
+
+      <p v-else-if="zones.length === 0" class="py-12 text-center text-neutral-500">
         {{ t.noResults }}
       </p>
 
@@ -48,7 +76,7 @@ onUnmounted(() => document.removeEventListener('click', close))
         <ZoneCard v-for="zone in visibleZones" :key="`${zone.region}-${zone.location}`" :zone="zone" />
       </div>
 
-      <div v-if="hasMoreZones" class="flex flex-col items-center gap-2 py-4">
+      <div v-if="!loading && hasMoreZones" class="flex flex-col items-center gap-2 py-4">
         <button
           type="button"
           class="rounded border border-neutral-700 px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800"

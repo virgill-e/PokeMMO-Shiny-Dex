@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """
-Extracts horde encounter data from the PokeMMO-Tools/pokemmo-hub repository
-into a small JSON file consumed by the Nuxt app.
+Extracts encounter data from the PokeMMO-Tools/pokemmo-hub repository into
+two small JSON files consumed by the Nuxt app: horde encounters and single
+("unique") encounters, kept separate since they're two different farming
+styles.
 
 Source: https://github.com/PokeMMO-Tools/pokemmo-hub
   - src/data/pokemmo/monster.json (per-pokemon encounter locations, incl. season + horde flags)
   - src/locales/fr-FR/monster.json (French pokemon names)
   - src/locales/fr-FR/locations.json (French location names)
+
+Output goes to public/data/ (not app/data/) and is fetched at runtime rather
+than bundled: the singles dataset alone is ~30MB uncompressed, way too big
+to inline into the JS bundle.
 
 Re-run this script whenever pokemmo-hub updates its data:
   python3 scripts/extract-data.py
@@ -21,7 +27,9 @@ MONSTER_JSON_URL = f"{BASE_URL}/src/data/pokemmo/monster.json"
 FR_MONSTER_URL = f"{BASE_URL}/src/locales/fr-FR/monster.json"
 FR_LOCATIONS_URL = f"{BASE_URL}/src/locales/fr-FR/locations.json"
 
-OUTPUT_PATH = Path(__file__).parent.parent / "app" / "data" / "hordes.json"
+OUTPUT_DIR = Path(__file__).parent.parent / "public" / "data"
+HORDES_OUTPUT_PATH = OUTPUT_DIR / "hordes.json"
+SINGLES_OUTPUT_PATH = OUTPUT_DIR / "singles.json"
 
 # Location suffixes (the "(...)" part of e.g. "Dragonspiral Tower (Outside)") aren't
 # covered by pokemmo-hub's French locations file, which only translates the base name.
@@ -98,17 +106,19 @@ def translate_location(full_name, table):
     return f"{base_fr} ({suffix_fr})"
 
 
-def extract_hordes(monsters, fr_monster, fr_locations):
-    records = []
+def extract_records(monsters, fr_monster, fr_locations):
+    """Returns (hordes, singles): every location entry, split by whether it's
+    a horde encounter (is_horde_3x/5x) or a regular ("unique") one."""
+    hordes = []
+    singles = []
     for mon in monsters:
         types = list(dict.fromkeys(mon.get("types", [])))  # dedupe, keep order
         name_fr = translate(mon["name"], fr_monster)
         for loc in mon.get("locations", []):
-            size = 5 if loc.get("is_horde_5x") else 3 if loc.get("is_horde_3x") else None
-            if size is None:
-                continue
             location_en = loc.get("location_name_full") or loc.get("location_name")
-            records.append({
+            horde_size = 5 if loc.get("is_horde_5x") else 3 if loc.get("is_horde_3x") else None
+
+            record = {
                 "pokemonId": mon["id"],
                 "pokemonName": mon["name"],
                 "pokemonNameFr": name_fr,
@@ -117,7 +127,6 @@ def extract_hordes(monsters, fr_monster, fr_locations):
                 "location": location_en,
                 "locationFr": translate_location(location_en, fr_locations),
                 "season": loc.get("season") or "Any",
-                "hordeSize": size,
                 "encounterType": loc.get("type"),
                 "minLevel": loc.get("min_level"),
                 "maxLevel": loc.get("max_level"),
@@ -126,8 +135,23 @@ def extract_hordes(monsters, fr_monster, fr_locations):
                     "day": loc.get("rarity_day"),
                     "night": loc.get("rarity_night"),
                 },
-            })
-    return records
+            }
+
+            if horde_size is None:
+                singles.append(record)
+            else:
+                hordes.append({**record, "hordeSize": horde_size})
+
+    return hordes, singles
+
+
+def write_json(records, path):
+    records.sort(key=lambda r: (r["region"], r["location"], r["pokemonName"]))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(records, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+    )
 
 
 def main():
@@ -135,15 +159,13 @@ def main():
     fr_monster = fetch_json(FR_MONSTER_URL)
     fr_locations = fetch_json(FR_LOCATIONS_URL)
 
-    records = extract_hordes(monsters, fr_monster, fr_locations)
-    records.sort(key=lambda r: (r["region"], r["location"], r["pokemonName"]))
+    hordes, singles = extract_records(monsters, fr_monster, fr_locations)
 
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_PATH.write_text(
-        json.dumps(records, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
-    print(f"Wrote {len(records)} horde encounter records to {OUTPUT_PATH}")
+    write_json(hordes, HORDES_OUTPUT_PATH)
+    write_json(singles, SINGLES_OUTPUT_PATH)
+
+    print(f"Wrote {len(hordes)} horde encounter records to {HORDES_OUTPUT_PATH}")
+    print(f"Wrote {len(singles)} single encounter records to {SINGLES_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
