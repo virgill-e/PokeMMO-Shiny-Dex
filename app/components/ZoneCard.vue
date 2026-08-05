@@ -2,18 +2,34 @@
 import type { Zone } from '~/utils/types'
 import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS } from '~/i18n/translations'
 
-defineProps<{ zone: Zone }>()
+const props = defineProps<{ zone: Zone }>()
 
 const { locale, t } = useLocale()
+const { isFavorite, toggleFavorite } = useFavorites()
+
+const favorite = computed(() => isFavorite(props.zone.region, props.zone.locationKey))
 </script>
 
 <template>
   <div class="rounded-lg border border-neutral-800 bg-neutral-900">
-    <div class="border-b border-neutral-800 px-4 py-2">
-      <h2 class="font-semibold text-neutral-100">
-        {{ zone.location }}
-      </h2>
-      <p class="text-xs text-neutral-500">{{ zone.region }}</p>
+    <div class="flex items-start justify-between gap-2 border-b border-neutral-800 px-4 py-2">
+      <div>
+        <h2 class="font-semibold text-neutral-100">
+          {{ zone.location }}
+        </h2>
+        <p class="text-xs text-neutral-500">{{ zone.region }}</p>
+      </div>
+
+      <button
+        type="button"
+        class="shrink-0 text-lg leading-none"
+        :class="favorite ? 'text-amber-400' : 'text-neutral-600 hover:text-neutral-400'"
+        :title="favorite ? t.favoriteRemove : t.favoriteAdd"
+        :aria-label="favorite ? t.favoriteRemove : t.favoriteAdd"
+        @click="toggleFavorite(zone.region, zone.locationKey)"
+      >
+        {{ favorite ? '★' : '☆' }}
+      </button>
     </div>
 
     <ul class="divide-y divide-neutral-800">

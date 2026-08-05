@@ -2,7 +2,7 @@
 import { SEASONS, REGIONS, POKEMON_TYPES } from '~/utils/types'
 import { REGION_LABELS, SEASON_LABELS, TYPE_LABELS, resultCountLabel } from '~/i18n/translations'
 
-const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, timeOfDay, guaranteedOnly, resultCount, resetFilters } = useEncounters()
+const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, timeOfDay, guaranteedOnly, favoritesOnly, resultCount, resetFilters } = useEncounters()
 const { locale, t } = useLocale()
 const shiny = useShiny()
 </script>
@@ -85,6 +85,11 @@ const shiny = useShiny()
     <label class="flex cursor-pointer items-center gap-2 text-sm text-neutral-400">
       <input v-model="shiny" type="checkbox" class="h-4 w-4 accent-amber-400">
       {{ t.shinyToggle }}
+    </label>
+
+    <label class="flex cursor-pointer items-center gap-2 text-sm text-neutral-400">
+      <input v-model="favoritesOnly" type="checkbox" class="h-4 w-4 accent-amber-400">
+      {{ t.favoritesOnly }}
     </label>
 
     <button

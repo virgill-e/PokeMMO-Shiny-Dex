@@ -61,6 +61,7 @@ function buildSlotIndex(mode: EncounterMode, locale: Locale, records: EncounterR
 
 export function useEncounters() {
   const { locale } = useLocale()
+  const { isFavorite } = useFavorites()
 
   const mode = useState<EncounterMode>('encounter-mode', () => 'hordes')
   const hordesData = useState<EncounterRecord[] | null>('encounter-data-hordes', () => null)
@@ -96,13 +97,14 @@ export function useEncounters() {
   const pokemonType = useState<'all' | string>('filter-type', () => 'all')
   const timeOfDay = useState<TimeOfDayFilter>('filter-time-of-day', () => 'all')
   const guaranteedOnly = useState('filter-guaranteed-only', () => false)
+  const favoritesOnly = useState('filter-favorites-only', () => false)
   const visibleCount = useState('visible-zone-count', () => PAGE_SIZE)
 
   // A localized location search is meaningless once the language changes.
   watch(locale, () => { location.value = '' })
 
   // Any change of query should start back from the top of the results.
-  watch([hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly], () => { visibleCount.value = PAGE_SIZE })
+  watch([hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly, favoritesOnly], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: EncounterRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -181,7 +183,7 @@ export function useEncounters() {
       entry.maxLevel = Math.max(entry.maxLevel, r.maxLevel)
     }
 
-    return [...zoneMap.values()]
+    let result = [...zoneMap.values()]
       .map(z => ({
         region: z.region,
         location: z.location,
@@ -194,6 +196,12 @@ export function useEncounters() {
           .sort((a, b) => a.pokemonName.localeCompare(b.pokemonName) || a.encounterType.localeCompare(b.encounterType)),
       }))
       .sort((a, b) => a.region.localeCompare(b.region) || a.location.localeCompare(b.location))
+
+    if (favoritesOnly.value) {
+      result = result.filter(z => isFavorite(z.region, z.locationKey))
+    }
+
+    return result
   })
 
   const visibleZones = computed(() => zones.value.slice(0, visibleCount.value))
@@ -214,6 +222,7 @@ export function useEncounters() {
     pokemonType.value = 'all'
     timeOfDay.value = 'all'
     guaranteedOnly.value = false
+    favoritesOnly.value = false
   }
 
   // Other pokemon sharing the exact same slot (zone + encounter type + horde
@@ -244,6 +253,7 @@ export function useEncounters() {
     pokemonType,
     timeOfDay,
     guaranteedOnly,
+    favoritesOnly,
     zones,
     visibleZones,
     hasMoreZones,
