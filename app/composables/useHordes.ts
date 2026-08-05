@@ -48,13 +48,17 @@ export function useHordes() {
       }
       const zone = zoneMap.get(zoneKey)!
 
-      const entryKey = `${r.pokemonId}__${r.hordeSize}`
+      // Encounter type is part of the entry key: the same pokemon can appear in the
+      // same zone through several distinct methods at once (e.g. Cave AND Water in a
+      // cavern with a lake), each with its own rarity/levels.
+      const entryKey = `${r.pokemonId}__${r.hordeSize}__${r.encounterType}`
       if (!zone.entries.has(entryKey)) {
         zone.entries.set(entryKey, {
           pokemonId: r.pokemonId,
           pokemonName: pokemonName(r),
           types: r.types,
           hordeSize: r.hordeSize,
+          encounterType: r.encounterType,
           seasonRarities: [],
           minLevel: r.minLevel,
           maxLevel: r.maxLevel,
@@ -77,7 +81,7 @@ export function useHordes() {
             ...e,
             seasonRarities: [...e.seasonRarities].sort((a, b) => SEASONS.indexOf(a.season) - SEASONS.indexOf(b.season)),
           }))
-          .sort((a, b) => a.pokemonName.localeCompare(b.pokemonName)),
+          .sort((a, b) => a.pokemonName.localeCompare(b.pokemonName) || a.encounterType.localeCompare(b.encounterType)),
       }))
       .sort((a, b) => a.region.localeCompare(b.region) || a.location.localeCompare(b.location))
   })

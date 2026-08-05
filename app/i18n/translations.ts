@@ -19,6 +19,34 @@ export const SEASON_ICONS: Record<string, string> = {
   Winter: '❄️',
 }
 
+export const ENCOUNTER_TYPE_LABELS: Record<Locale, Record<string, string>> = {
+  fr: {
+    Grass: 'Herbe',
+    'Dark Grass': 'Herbe Mouvante',
+    Water: 'Eau',
+    Cave: 'Grotte',
+    Inside: 'Intérieur',
+    'Sweet Scent': 'Odeur Suave',
+  },
+  en: {
+    Grass: 'Grass',
+    'Dark Grass': 'Dark Grass',
+    Water: 'Water',
+    Cave: 'Cave',
+    Inside: 'Inside',
+    'Sweet Scent': 'Sweet Scent',
+  },
+}
+
+export const ENCOUNTER_TYPE_ICONS: Record<string, string> = {
+  Grass: '🌿',
+  'Dark Grass': '🌾',
+  Water: '💧',
+  Cave: '🪨',
+  Inside: '🏠',
+  'Sweet Scent': '🌬️',
+}
+
 export const UI_TEXT: Record<Locale, Record<string, string>> = {
   fr: {
     appTitle: 'PokeMMO — Farm de hordes',

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Zone } from '~/utils/types'
-import { SEASON_ICONS } from '~/i18n/translations'
+import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS } from '~/i18n/translations'
 
 defineProps<{ zone: Zone }>()
 
-const { t } = useLocale()
+const { locale, t } = useLocale()
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const { t } = useLocale()
     <ul class="divide-y divide-neutral-800">
       <li
         v-for="entry in zone.entries"
-        :key="`${entry.pokemonId}-${entry.hordeSize}`"
+        :key="`${entry.pokemonId}-${entry.hordeSize}-${entry.encounterType}`"
         class="flex flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:gap-3"
       >
         <div class="flex flex-1 items-center gap-3">
@@ -31,6 +31,10 @@ const { t } = useLocale()
               <TypeBadge v-for="tp in entry.types" :key="tp" :type="tp" />
             </div>
           </div>
+
+          <span class="whitespace-nowrap rounded-full bg-neutral-800 px-2 py-0.5 text-xs text-neutral-300">
+            {{ ENCOUNTER_TYPE_ICONS[entry.encounterType] ?? '❔' }} {{ ENCOUNTER_TYPE_LABELS[locale][entry.encounterType] ?? entry.encounterType }}
+          </span>
 
           <span
             class="rounded-full px-2 py-0.5 text-xs font-semibold"

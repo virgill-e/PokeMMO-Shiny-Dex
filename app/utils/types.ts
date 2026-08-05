@@ -35,6 +35,7 @@ export interface ZoneEntry {
   pokemonName: string
   types: string[]
   hordeSize: HordeSize
+  encounterType: string
   seasonRarities: SeasonRarity[]
   minLevel: number
   maxLevel: number
