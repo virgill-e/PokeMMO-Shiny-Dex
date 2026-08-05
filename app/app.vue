@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { githubStarsLabel } from '~/i18n/translations'
+
 const { mode, setMode, loading, ensureLoaded, zones, visibleZones, hasMoreZones, loadMoreZones } = useEncounters()
 const { locale, setLocale, t } = useLocale()
+const { stars } = useGithubStars()
 
 const { close } = useRarityTooltip()
 onMounted(() => {
@@ -20,23 +23,34 @@ onUnmounted(() => document.removeEventListener('click', close))
         <p class="text-sm text-neutral-500">{{ t.appSubtitle }}</p>
       </div>
 
-      <div class="flex shrink-0 overflow-hidden rounded border border-neutral-700 text-sm">
-        <button
-          type="button"
-          class="px-3 py-1.5"
-          :class="locale === 'fr' ? 'bg-amber-500 text-neutral-900 font-semibold' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'"
-          @click="setLocale('fr')"
+      <div class="flex shrink-0 items-center gap-3">
+        <a
+          href="https://github.com/virgill-e/PokeMMO-Shiny-Dex"
+          target="_blank"
+          rel="noopener"
+          class="rounded border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm font-semibold text-amber-400 hover:bg-neutral-800"
         >
-          FR
-        </button>
-        <button
-          type="button"
-          class="px-3 py-1.5"
-          :class="locale === 'en' ? 'bg-amber-500 text-neutral-900 font-semibold' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'"
-          @click="setLocale('en')"
-        >
-          EN
-        </button>
+          {{ githubStarsLabel(locale, stars) }}
+        </a>
+
+        <div class="flex overflow-hidden rounded border border-neutral-700 text-sm">
+          <button
+            type="button"
+            class="px-3 py-1.5"
+            :class="locale === 'fr' ? 'bg-amber-500 text-neutral-900 font-semibold' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'"
+            @click="setLocale('fr')"
+          >
+            FR
+          </button>
+          <button
+            type="button"
+            class="px-3 py-1.5"
+            :class="locale === 'en' ? 'bg-amber-500 text-neutral-900 font-semibold' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'"
+            @click="setLocale('en')"
+          >
+            EN
+          </button>
+        </div>
       </div>
     </header>
 
@@ -96,6 +110,9 @@ onUnmounted(() => document.removeEventListener('click', close))
       <p class="mt-1">
         {{ t.footerContact }}
         <a href="https://virgill-e.com/#contact" target="_blank" rel="noopener" class="underline hover:text-neutral-300">virgill-e.com</a>
+      </p>
+      <p class="mt-1">
+        <a href="https://github.com/virgill-e/PokeMMO-Shiny-Dex" target="_blank" rel="noopener" class="underline hover:text-neutral-300">{{ t.footerStar }}</a>
       </p>
     </footer>
   </div>

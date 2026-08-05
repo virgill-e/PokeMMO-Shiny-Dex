@@ -6,6 +6,8 @@ A tool to find shiny-farmable Pokémon hordes in [PokeMMO](https://pokemmo.com/)
 
 🌐 [pokemmo.virgill-e.com](https://pokemmo.virgill-e.com/)
 
+⭐ If you find this useful, consider starring the repo — it helps!
+
 ## Features
 
 - **Two modes**: Hordes (groups of 3 or 5 identical Pokémon) and single encounters (regular one-by-one wild encounters)

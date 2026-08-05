@@ -159,6 +159,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     footerData: 'Données de rencontre :',
     footerSprites: 'Sprites :',
     footerContact: 'Un problème avec ce site ? Contactez-moi sur',
+    footerStar: '⭐ Vous aimez cet outil ? Mettez une étoile sur GitHub !',
   },
   en: {
     appTitle: 'PokeMMO — Shiny Dex',
@@ -201,9 +202,15 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     footerData: 'Encounter data:',
     footerSprites: 'Sprites:',
     footerContact: 'Found an issue with this site? Contact me at',
+    footerStar: '⭐ Like this tool? Give it a star on GitHub!',
   },
 }
 
 export function resultCountLabel(locale: Locale, count: number) {
   return locale === 'fr' ? `${count} rencontre(s)` : `${count} encounter(s)`
+}
+
+export function githubStarsLabel(locale: Locale, stars: number | null) {
+  if (stars === null) return '⭐ GitHub'
+  return locale === 'fr' ? `⭐ ${stars} sur GitHub` : `⭐ ${stars} on GitHub`
 }
