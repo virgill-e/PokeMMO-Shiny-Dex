@@ -22,7 +22,7 @@ const { locale, t } = useLocale()
         :key="`${entry.pokemonId}-${entry.hordeSize}-${entry.encounterType}`"
         class="flex flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:gap-3"
       >
-        <div class="flex flex-1 items-center gap-3">
+        <div class="flex flex-1 flex-wrap items-center gap-3">
           <PokemonSprite :pokemon-id="entry.pokemonId" :pokemon-name="entry.pokemonName" />
 
           <div class="min-w-[9rem] flex-1">

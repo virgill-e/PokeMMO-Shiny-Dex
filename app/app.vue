@@ -4,7 +4,7 @@ const { locale, setLocale, t } = useLocale()
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-200">
+  <div class="min-h-screen overflow-x-hidden bg-neutral-950 text-neutral-200">
     <NuxtRouteAnnouncer />
 
     <header class="flex items-start justify-between gap-4 border-b border-neutral-800 px-6 py-4">
