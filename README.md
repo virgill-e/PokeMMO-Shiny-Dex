@@ -4,6 +4,8 @@ A tool to find shiny-farmable Pokémon hordes in [PokeMMO](https://pokemmo.com/)
 
 🔗 [github.com/virgill-e/PokeMMO-Shiny-Dex](https://github.com/virgill-e/PokeMMO-Shiny-Dex)
 
+🌐 [pokemmo.virgill-e.com](https://pokemmo.virgill-e.com/)
+
 ## Features
 
 - **Filters**: horde size (x3 / x5), season, region, location (with autocomplete), Pokémon name
