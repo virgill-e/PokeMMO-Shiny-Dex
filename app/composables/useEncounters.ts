@@ -93,6 +93,7 @@ export function useEncounters() {
   const region = useState<'all' | string>('filter-region', () => 'all')
   const location = useState('filter-location', () => '')
   const search = useState('filter-search', () => '')
+  const pokemonType = useState<'all' | string>('filter-type', () => 'all')
   const timeOfDay = useState<TimeOfDayFilter>('filter-time-of-day', () => 'all')
   const guaranteedOnly = useState('filter-guaranteed-only', () => false)
   const visibleCount = useState('visible-zone-count', () => PAGE_SIZE)
@@ -101,7 +102,7 @@ export function useEncounters() {
   watch(locale, () => { location.value = '' })
 
   // Any change of query should start back from the top of the results.
-  watch([hordeSize, season, region, location, search, timeOfDay, guaranteedOnly], () => { visibleCount.value = PAGE_SIZE })
+  watch([hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: EncounterRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -122,6 +123,7 @@ export function useEncounters() {
     if (region.value !== 'all' && r.region !== region.value) return false
     if (location.value && !locationName(r).toLowerCase().includes(location.value.trim().toLowerCase())) return false
     if (search.value && !pokemonName(r).toLowerCase().includes(search.value.trim().toLowerCase())) return false
+    if (pokemonType.value !== 'all' && !r.types.includes(pokemonType.value)) return false
 
     if (timeOfDay.value === 'allday') {
       if (r.rarity.morning === '--' || r.rarity.day === '--' || r.rarity.night === '--') return false
@@ -209,6 +211,7 @@ export function useEncounters() {
     region.value = 'all'
     location.value = ''
     search.value = ''
+    pokemonType.value = 'all'
     timeOfDay.value = 'all'
     guaranteedOnly.value = false
   }
@@ -238,6 +241,7 @@ export function useEncounters() {
     location,
     locationOptions,
     search,
+    pokemonType,
     timeOfDay,
     guaranteedOnly,
     zones,

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { SEASONS, REGIONS } from '~/utils/types'
-import { REGION_LABELS, SEASON_LABELS, resultCountLabel } from '~/i18n/translations'
+import { SEASONS, REGIONS, POKEMON_TYPES } from '~/utils/types'
+import { REGION_LABELS, SEASON_LABELS, TYPE_LABELS, resultCountLabel } from '~/i18n/translations'
 
-const { mode, hordeSize, season, region, location, locationOptions, search, timeOfDay, guaranteedOnly, resultCount, resetFilters } = useEncounters()
+const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, timeOfDay, guaranteedOnly, resultCount, resetFilters } = useEncounters()
 const { locale, t } = useLocale()
 const shiny = useShiny()
 </script>
@@ -31,6 +31,14 @@ const shiny = useShiny()
       <select v-model="region" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
         <option value="all">{{ t.all }}</option>
         <option v-for="r in REGIONS" :key="r" :value="r">{{ REGION_LABELS[locale][r] }}</option>
+      </select>
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm">
+      <span class="text-neutral-400">{{ t.labelType }}</span>
+      <select v-model="pokemonType" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
+        <option value="all">{{ t.all }}</option>
+        <option v-for="tp in POKEMON_TYPES" :key="tp" :value="tp">{{ TYPE_LABELS[locale][tp] }}</option>
       </select>
     </label>
 

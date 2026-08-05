@@ -64,6 +64,11 @@ export interface Sibling {
 // Fixed display order, independent of locale.
 export const REGIONS = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova'] as const
 
+export const POKEMON_TYPES = [
+  'NORMAL', 'FIRE', 'WATER', 'ELECTRIC', 'GRASS', 'ICE', 'FIGHTING', 'POISON',
+  'GROUND', 'FLYING', 'PSYCHIC', 'BUG', 'ROCK', 'GHOST', 'DRAGON', 'DARK', 'STEEL', 'FAIRY',
+] as const
+
 export const TYPE_COLORS: Record<string, string> = {
   NORMAL: 'bg-neutral-400',
   FIRE: 'bg-orange-500',
