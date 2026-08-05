@@ -77,20 +77,11 @@ const shiny = useShiny()
       >
     </label>
 
-    <label v-if="mode === 'hordes'" class="flex cursor-pointer items-center gap-2 text-sm text-neutral-400">
-      <input v-model="guaranteedOnly" type="checkbox" class="h-4 w-4 accent-amber-400">
-      {{ t.guaranteedOnly }}
-    </label>
+    <Checkbox v-if="mode === 'hordes'" v-model="guaranteedOnly">{{ t.guaranteedOnly }}</Checkbox>
 
-    <label class="flex cursor-pointer items-center gap-2 text-sm text-neutral-400">
-      <input v-model="shiny" type="checkbox" class="h-4 w-4 accent-amber-400">
-      {{ t.shinyToggle }}
-    </label>
+    <Checkbox v-model="shiny">{{ t.shinyToggle }}</Checkbox>
 
-    <label class="flex cursor-pointer items-center gap-2 text-sm text-neutral-400">
-      <input v-model="favoritesOnly" type="checkbox" class="h-4 w-4 accent-amber-400">
-      {{ t.favoritesOnly }}
-    </label>
+    <Checkbox v-model="favoritesOnly">{{ t.favoritesOnly }}</Checkbox>
 
     <button
       type="button"
