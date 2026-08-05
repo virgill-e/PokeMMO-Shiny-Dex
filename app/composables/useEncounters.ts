@@ -131,10 +131,14 @@ export function useEncounters() {
 
     if (mode.value === 'hordes' && guaranteedOnly.value) {
       const target = guaranteedValue(r.encounterType)
-      const fields: TimeOfDay[] = timeOfDay.value === 'all' || timeOfDay.value === 'allday'
-        ? ['morning', 'day', 'night']
-        : [timeOfDay.value]
-      if (!fields.some(f => r.rarity[f] === target)) return false
+      if (timeOfDay.value === 'allday') {
+        // "Toute la journée" + "Garanti" = guaranteed at every time of day, not just one.
+        if (r.rarity.morning !== target || r.rarity.day !== target || r.rarity.night !== target) return false
+      } else if (timeOfDay.value === 'all') {
+        if (!(r.rarity.morning === target || r.rarity.day === target || r.rarity.night === target)) return false
+      } else {
+        if (r.rarity[timeOfDay.value] !== target) return false
+      }
     }
 
     return true
