@@ -48,7 +48,7 @@ const { locale, t } = useLocale()
           </span>
         </div>
 
-        <div class="grid gap-x-2 gap-y-0.5 text-xs" :title="t.rarityTooltip" style="grid-template-columns: 1.25rem repeat(3, 3rem)">
+        <div class="grid gap-x-2 gap-y-0.5 text-xs" style="grid-template-columns: 1.25rem repeat(3, 3rem)">
           <span />
           <span class="text-center text-[9px] uppercase tracking-wide text-neutral-500">{{ t.rarityMorning }}</span>
           <span class="text-center text-[9px] uppercase tracking-wide text-neutral-500">{{ t.rarityDay }}</span>
@@ -56,9 +56,9 @@ const { locale, t } = useLocale()
 
           <template v-for="sr in entry.seasonRarities" :key="sr.season">
             <span :title="sr.season">{{ SEASON_ICONS[sr.season] }}</span>
-            <span class="text-center text-neutral-300">{{ sr.rarity.morning }}</span>
-            <span class="text-center text-neutral-300">{{ sr.rarity.day }}</span>
-            <span class="text-center text-neutral-300">{{ sr.rarity.night }}</span>
+            <RarityCell :zone="zone" :entry="entry" :season="sr.season" time-of-day="morning" :value="sr.rarity.morning" />
+            <RarityCell :zone="zone" :entry="entry" :season="sr.season" time-of-day="day" :value="sr.rarity.day" />
+            <RarityCell :zone="zone" :entry="entry" :season="sr.season" time-of-day="night" :value="sr.rarity.night" />
           </template>
         </div>
       </li>

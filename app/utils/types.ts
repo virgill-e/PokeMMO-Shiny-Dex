@@ -44,7 +44,16 @@ export interface ZoneEntry {
 export interface Zone {
   region: string
   location: string
+  locationKey: string
   entries: ZoneEntry[]
+}
+
+export type TimeOfDay = 'morning' | 'day' | 'night'
+
+export interface Sibling {
+  pokemonId: number
+  pokemonName: string
+  rate: string
 }
 
 // Region keys are the canonical (English) names used throughout the data.
