@@ -8,9 +8,12 @@ A tool to find shiny-farmable Pokémon hordes in [PokeMMO](https://pokemmo.com/)
 
 ## Features
 
-- **Filters**: horde size (x3 / x5), season, region, location (with autocomplete), Pokémon name
+- **Two modes**: Hordes (groups of 3 or 5 identical Pokémon) and single encounters (regular one-by-one wild encounters)
+- **Filters**: horde size (x3 / x5), season, region, Pokémon type, time of day (morning / day / night / all day), location (with autocomplete), Pokémon name, guaranteed-encounter only (hordes)
+- **Favorites**: star a zone to pin it, and filter to favorites only — kept separately for hordes and single encounters, stored in your browser
 - **Zone view**: Pokémon grouped by location, with per-season encounter rates (morning / day / night) and the encounter method (Grass, Dark Grass, Water, Cave...)
 - **Shared horde slots**: hover/tap a rarity value to see which other Pokémon share that exact spot, encounter type, horde size and season
+- **Shareable filters**: the current mode and filters are reflected in the URL
 - **Shiny sprite toggle**
 - **French / English**, with the language choice remembered in your browser
 
