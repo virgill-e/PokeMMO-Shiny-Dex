@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { zones } = useHordes()
+const { zones, visibleZones, hasMoreZones, loadMoreZones } = useHordes()
 const { locale, setLocale, t } = useLocale()
 
 const { close } = useRarityTooltip()
@@ -45,7 +45,18 @@ onUnmounted(() => document.removeEventListener('click', close))
       </p>
 
       <div v-else class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ZoneCard v-for="zone in zones" :key="`${zone.region}-${zone.location}`" :zone="zone" />
+        <ZoneCard v-for="zone in visibleZones" :key="`${zone.region}-${zone.location}`" :zone="zone" />
+      </div>
+
+      <div v-if="hasMoreZones" class="flex flex-col items-center gap-2 py-4">
+        <button
+          type="button"
+          class="rounded border border-neutral-700 px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800"
+          @click="loadMoreZones"
+        >
+          {{ t.loadMore }}
+        </button>
+        <p class="text-xs text-neutral-500">{{ visibleZones.length }} / {{ zones.length }}</p>
       </div>
     </main>
 

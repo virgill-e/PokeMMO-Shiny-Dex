@@ -1,8 +1,48 @@
 import rawHordes from '~/data/hordes.json'
 import { SEASONS } from '~/utils/types'
-import type { HordeRecord, Season, HordeSize, Zone, ZoneEntry, TimeOfDay, Sibling } from '~/utils/types'
+import type { HordeRecord, Season, HordeSize, Zone, ZoneEntry, TimeOfDay, Sibling, Rarity } from '~/utils/types'
+import type { Locale } from '~/i18n/translations'
 
 const records = rawHordes as HordeRecord[]
+
+const PAGE_SIZE = 24
+
+// How many zones are initially rendered / revealed per "load more" click.
+// Rendering all ~250 zones at once (4994 records) blows up the DOM to
+// 100k+ nodes and makes first load noticeably slow.
+
+interface SlotMember {
+  pokemonId: number
+  pokemonName: string
+  rarity: Rarity
+}
+
+// region|location|encounterType|hordeSize|season -> every pokemon occupying that
+// exact horde slot. Built once per locale (pokemon names are localized) and
+// reused by every RarityCell, instead of re-scanning all records per cell.
+const slotIndexCache = new Map<Locale, Map<string, SlotMember[]>>()
+
+function buildSlotIndex(locale: Locale) {
+  const cached = slotIndexCache.get(locale)
+  if (cached) return cached
+
+  const index = new Map<string, SlotMember[]>()
+  for (const r of records) {
+    const key = `${r.region}|${r.location}|${r.encounterType}|${r.hordeSize}|${r.season}`
+    let members = index.get(key)
+    if (!members) {
+      members = []
+      index.set(key, members)
+    }
+    members.push({
+      pokemonId: r.pokemonId,
+      pokemonName: locale === 'fr' ? r.pokemonNameFr : r.pokemonName,
+      rarity: r.rarity,
+    })
+  }
+  slotIndexCache.set(locale, index)
+  return index
+}
 
 export function useHordes() {
   const { locale } = useLocale()
@@ -12,9 +52,13 @@ export function useHordes() {
   const region = useState<'all' | string>('filter-region', () => 'all')
   const location = useState('filter-location', () => '')
   const search = useState('filter-search', () => '')
+  const visibleCount = useState('visible-zone-count', () => PAGE_SIZE)
 
   // A localized location search is meaningless once the language changes.
   watch(locale, () => { location.value = '' })
+
+  // Any change of query should start back from the top of the results.
+  watch([hordeSize, season, region, location, search], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: HordeRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -87,6 +131,13 @@ export function useHordes() {
       .sort((a, b) => a.region.localeCompare(b.region) || a.location.localeCompare(b.location))
   })
 
+  const visibleZones = computed(() => zones.value.slice(0, visibleCount.value))
+  const hasMoreZones = computed(() => zones.value.length > visibleCount.value)
+
+  function loadMoreZones() {
+    visibleCount.value += PAGE_SIZE
+  }
+
   const resultCount = computed(() => filtered.value.length)
 
   function resetFilters() {
@@ -101,16 +152,29 @@ export function useHordes() {
   // size + season) as `entry` — i.e. what else you might run into alongside it.
   // Looks up the full, unfiltered dataset so active UI filters don't hide siblings.
   function siblingsFor(zone: Zone, entry: ZoneEntry, seasonValue: Season, timeOfDay: TimeOfDay): Sibling[] {
-    const seen = new Map<number, Sibling>()
-    for (const r of records) {
-      if (r.region !== zone.region || r.location !== zone.locationKey) continue
-      if (r.encounterType !== entry.encounterType || r.hordeSize !== entry.hordeSize) continue
-      if (r.season !== seasonValue || r.pokemonId === entry.pokemonId) continue
-      if (seen.has(r.pokemonId)) continue
-      seen.set(r.pokemonId, { pokemonId: r.pokemonId, pokemonName: pokemonName(r), rate: r.rarity[timeOfDay] })
-    }
-    return [...seen.values()].sort((a, b) => a.pokemonName.localeCompare(b.pokemonName))
+    const key = `${zone.region}|${zone.locationKey}|${entry.encounterType}|${entry.hordeSize}|${seasonValue}`
+    const members = buildSlotIndex(locale.value).get(key)
+    if (!members) return []
+
+    return members
+      .filter(m => m.pokemonId !== entry.pokemonId)
+      .map(m => ({ pokemonId: m.pokemonId, pokemonName: m.pokemonName, rate: m.rarity[timeOfDay] }))
+      .sort((a, b) => a.pokemonName.localeCompare(b.pokemonName))
   }
 
-  return { hordeSize, season, region, location, locationOptions, search, zones, resultCount, resetFilters, siblingsFor }
+  return {
+    hordeSize,
+    season,
+    region,
+    location,
+    locationOptions,
+    search,
+    zones,
+    visibleZones,
+    hasMoreZones,
+    loadMoreZones,
+    resultCount,
+    resetFilters,
+    siblingsFor,
+  }
 }
