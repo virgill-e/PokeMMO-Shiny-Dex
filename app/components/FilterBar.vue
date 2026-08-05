@@ -41,7 +41,7 @@ const shiny = useShiny()
         type="text"
         list="location-options"
         :placeholder="t.locationPlaceholder"
-        class="w-48 rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100 placeholder:text-neutral-500"
+        class="w-48 rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-base text-neutral-100 placeholder:text-neutral-500"
       >
       <datalist id="location-options">
         <option v-for="loc in locationOptions" :key="loc" :value="loc" />
@@ -54,7 +54,7 @@ const shiny = useShiny()
         v-model="search"
         type="text"
         :placeholder="t.pokemonPlaceholder"
-        class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100 placeholder:text-neutral-500"
+        class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-base text-neutral-100 placeholder:text-neutral-500"
       >
     </label>
 

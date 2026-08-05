@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const { zones } = useHordes()
 const { locale, setLocale, t } = useLocale()
+
+const { close } = useRarityTooltip()
+onMounted(() => document.addEventListener('click', close))
+onUnmounted(() => document.removeEventListener('click', close))
 </script>
 
 <template>
