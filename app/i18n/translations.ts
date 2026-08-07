@@ -160,7 +160,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     footerSprites: 'Sprites :',
     footerContact: 'Un problème avec ce site ? Contactez-moi sur',
     footerStar: '⭐ Vous aimez cet outil ? Mettez une étoile sur GitHub !',
-    rotationCaveLabel: '🪨 La Grotte Altérée',
+    rotationCaveLabel: '🪨 Grotte Métamo',
     rotationCaveActive: 'ACTIF',
     rotationSingles: 'Rencontres uniques',
     rotationRareSingles: 'Rencontres rares',
