@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
 Extracts encounter data from the PokeMMO-Tools/pokemmo-hub repository into
-two small JSON files consumed by the Nuxt app: horde encounters and single
-("unique") encounters, kept separate since they're two different farming
-styles.
+JSON files consumed by the Nuxt app: horde encounters and single ("unique")
+encounters (kept separate since they're two different farming styles), plus
+a standalone English->French Pokemon name map used wherever a Pokemon name
+comes from a source outside this data (e.g. the Altering Cave rotation
+sheet).
 
 Source: https://github.com/PokeMMO-Tools/pokemmo-hub
   - src/data/pokemmo/monster.json (per-pokemon encounter locations, incl. season + horde flags)
@@ -30,6 +32,7 @@ FR_LOCATIONS_URL = f"{BASE_URL}/src/locales/fr-FR/locations.json"
 OUTPUT_DIR = Path(__file__).parent.parent / "public" / "data"
 HORDES_OUTPUT_PATH = OUTPUT_DIR / "hordes.json"
 SINGLES_OUTPUT_PATH = OUTPUT_DIR / "singles.json"
+POKEMON_NAMES_FR_OUTPUT_PATH = OUTPUT_DIR / "pokemon-names-fr.json"
 
 # Location suffixes (the "(...)" part of e.g. "Dragonspiral Tower (Outside)") aren't
 # covered by pokemmo-hub's French locations file, which only translates the base name.
@@ -163,9 +166,14 @@ def main():
 
     write_json(hordes, HORDES_OUTPUT_PATH)
     write_json(singles, SINGLES_OUTPUT_PATH)
+    POKEMON_NAMES_FR_OUTPUT_PATH.write_text(
+        json.dumps(fr_monster, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+    )
 
     print(f"Wrote {len(hordes)} horde encounter records to {HORDES_OUTPUT_PATH}")
     print(f"Wrote {len(singles)} single encounter records to {SINGLES_OUTPUT_PATH}")
+    print(f"Wrote {len(fr_monster)} pokemon name translations to {POKEMON_NAMES_FR_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

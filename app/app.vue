@@ -24,6 +24,8 @@ onUnmounted(() => document.removeEventListener('click', close))
       </div>
 
       <div class="flex shrink-0 items-center gap-3">
+        <RotationCaveHover />
+
         <a
           href="https://github.com/virgill-e/PokeMMO-Shiny-Dex"
           target="_blank"
