@@ -117,6 +117,15 @@ def extract_records(monsters, fr_monster, fr_locations):
     for mon in monsters:
         types = list(dict.fromkeys(mon.get("types", [])))  # dedupe, keep order
         name_fr = translate(mon["name"], fr_monster)
+
+        # abilities is always [ability1, ability2, hiddenAbility]; ability2
+        # duplicates ability1 when the species only has one regular ability,
+        # and a "--" placeholder means no hidden ability is defined.
+        raw_abilities = mon.get("abilities", [])
+        regular = [a["name"] for a in raw_abilities[:2] if a and a.get("name") and a["name"] != "--"]
+        abilities = list(dict.fromkeys(regular))
+        hidden = raw_abilities[2]["name"] if len(raw_abilities) > 2 and raw_abilities[2] and raw_abilities[2].get("name") not in (None, "--") else None
+
         for loc in mon.get("locations", []):
             location_en = loc.get("location_name_full") or loc.get("location_name")
             horde_size = 5 if loc.get("is_horde_5x") else 3 if loc.get("is_horde_3x") else None
@@ -126,6 +135,8 @@ def extract_records(monsters, fr_monster, fr_locations):
                 "pokemonName": mon["name"],
                 "pokemonNameFr": name_fr,
                 "types": types,
+                "abilities": abilities,
+                "hiddenAbility": hidden,
                 "region": loc.get("region_name"),
                 "location": location_en,
                 "locationFr": translate_location(location_en, fr_locations),
