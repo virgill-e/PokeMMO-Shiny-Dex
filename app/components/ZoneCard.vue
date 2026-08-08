@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Zone } from '~/utils/types'
-import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS } from '~/i18n/translations'
+import type { Zone, ZoneEntry } from '~/utils/types'
+import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS, abilityLabel } from '~/i18n/translations'
 
 const props = defineProps<{ zone: Zone }>()
 
@@ -8,6 +8,12 @@ const { locale, t } = useLocale()
 const { isFavorite, toggleFavorite } = useFavorites()
 
 const favorite = computed(() => isFavorite(props.zone.region, props.zone.locationKey))
+
+function entryAbilities(entry: ZoneEntry) {
+  const list = entry.abilities.map(name => ({ name, hidden: false }))
+  if (entry.hiddenAbility) list.push({ name: entry.hiddenAbility, hidden: true })
+  return list
+}
 </script>
 
 <template>
@@ -46,6 +52,11 @@ const favorite = computed(() => isFavorite(props.zone.region, props.zone.locatio
             <div class="mt-1 flex flex-wrap gap-1">
               <TypeBadge v-for="tp in entry.types" :key="tp" :type="tp" />
             </div>
+            <p class="mt-1 text-xs text-neutral-400">
+              <span v-for="(ab, i) in entryAbilities(entry)" :key="ab.name">
+                <span v-if="i > 0">, </span>{{ abilityLabel(locale, ab.name) }}<span v-if="ab.hidden">{{ t.hiddenAbilitySuffix }}</span>
+              </span>
+            </p>
           </div>
 
           <span class="whitespace-nowrap rounded-full bg-neutral-800 px-2 py-0.5 text-xs text-neutral-300">

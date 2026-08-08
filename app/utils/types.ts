@@ -18,6 +18,8 @@ export interface EncounterRecord {
   pokemonName: string
   pokemonNameFr: string
   types: string[]
+  abilities: string[]
+  hiddenAbility: string | null
   region: string
   location: string
   locationFr: string
@@ -38,6 +40,8 @@ export interface ZoneEntry {
   pokemonId: number
   pokemonName: string
   types: string[]
+  abilities: string[]
+  hiddenAbility: string | null
   hordeSize?: HordeSize
   encounterType: string
   seasonRarities: SeasonRarity[]

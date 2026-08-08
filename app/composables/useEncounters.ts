@@ -95,6 +95,7 @@ export function useEncounters() {
   const location = useState('filter-location', () => '')
   const search = useState('filter-search', () => '')
   const pokemonType = useState<'all' | string>('filter-type', () => 'all')
+  const ability = useState<'all' | string>('filter-ability', () => 'all')
   const timeOfDay = useState<TimeOfDayFilter>('filter-time-of-day', () => 'all')
   const guaranteedOnly = useState('filter-guaranteed-only', () => false)
   const favoritesOnly = useState('filter-favorites-only', () => false)
@@ -104,7 +105,7 @@ export function useEncounters() {
   watch(locale, () => { location.value = '' })
 
   // Any change of query should start back from the top of the results.
-  watch([hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly, favoritesOnly], () => { visibleCount.value = PAGE_SIZE })
+  watch([hordeSize, season, region, location, search, pokemonType, ability, timeOfDay, guaranteedOnly, favoritesOnly], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: EncounterRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -119,6 +120,15 @@ export function useEncounters() {
     return [...names].sort((a, b) => a.localeCompare(b))
   })
 
+  const abilityOptions = computed(() => {
+    const names = new Set<string>()
+    for (const r of records.value) {
+      for (const a of r.abilities) names.add(a)
+      if (r.hiddenAbility) names.add(r.hiddenAbility)
+    }
+    return [...names].sort((a, b) => a.localeCompare(b))
+  })
+
   const filtered = computed(() => records.value.filter((r) => {
     if (mode.value === 'hordes' && hordeSize.value !== 'all' && r.hordeSize !== hordeSize.value) return false
     if (season.value !== 'all' && r.season !== season.value) return false
@@ -126,6 +136,7 @@ export function useEncounters() {
     if (location.value && !locationName(r).toLowerCase().includes(location.value.trim().toLowerCase())) return false
     if (search.value && !pokemonName(r).toLowerCase().includes(search.value.trim().toLowerCase())) return false
     if (pokemonType.value !== 'all' && !r.types.includes(pokemonType.value)) return false
+    if (ability.value !== 'all' && !r.abilities.includes(ability.value) && r.hiddenAbility !== ability.value) return false
 
     if (timeOfDay.value === 'allday') {
       if (r.rarity.morning === '--' || r.rarity.day === '--' || r.rarity.night === '--') return false
@@ -168,6 +179,8 @@ export function useEncounters() {
           pokemonId: r.pokemonId,
           pokemonName: pokemonName(r),
           types: r.types,
+          abilities: r.abilities,
+          hiddenAbility: r.hiddenAbility,
           hordeSize: r.hordeSize,
           encounterType: r.encounterType,
           seasonRarities: [],
@@ -220,6 +233,7 @@ export function useEncounters() {
     location.value = ''
     search.value = ''
     pokemonType.value = 'all'
+    ability.value = 'all'
     timeOfDay.value = 'all'
     guaranteedOnly.value = false
     favoritesOnly.value = false
@@ -251,6 +265,8 @@ export function useEncounters() {
     locationOptions,
     search,
     pokemonType,
+    ability,
+    abilityOptions,
     timeOfDay,
     guaranteedOnly,
     favoritesOnly,
