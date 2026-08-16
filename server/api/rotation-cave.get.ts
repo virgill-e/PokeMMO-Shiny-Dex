@@ -34,17 +34,26 @@ export default defineEventHandler(async (): Promise<RotationCaveData> => {
   const rows: Array<{ c: Array<{ v: unknown } | null> }> = json.table.rows
   const cell = (row: number, col: number) => rows[row]?.c[col]?.v ?? null
 
-  // Row 2 ("ACTIVE") and row 3 ("Current") both set only on the column of
-  // the type currently active — every other type's column just holds old
-  // "Rotation N" reference data, not a live status.
+  // The sheet has a dedicated leading column marked "Current" (row 3) with
+  // the live data — this is the authoritative marker. Every other column
+  // just holds historical "Rotation N" reference data; the last one is
+  // still tagged "ACTIVE" (row 2) but that no longer means "currently
+  // active" since the sheet started using a separate "Current" column, so
+  // it's only a fallback in case the sheet ever reverts to the old layout
+  // where both markers lived on the same column.
   let activeCol = -1
+  let fallbackCol = -1
   const typeRow = rows[1]?.c ?? []
   for (let col = 0; col < typeRow.length; col += 2) {
-    if (cell(2, col) === 'ACTIVE' && cell(3, col) === 'Current') {
+    if (cell(3, col) === 'Current') {
       activeCol = col
       break
     }
+    if (cell(2, col) === 'ACTIVE' && fallbackCol === -1) {
+      fallbackCol = col
+    }
   }
+  if (activeCol === -1) activeCol = fallbackCol
   if (activeCol === -1) {
     throw createError({ statusCode: 502, statusMessage: 'No active rotation found in sheet' })
   }
