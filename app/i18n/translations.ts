@@ -394,6 +394,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     rotationHordes: 'Hordes',
     rotationLoading: 'Chargement des données de rotation...',
     rotationError: 'Impossible de charger les données de rotation.',
+    rotationSheetLink: 'Voir la feuille Google Sheets',
     rotationCredit: 'Source :',
   },
   en: {
@@ -447,6 +448,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     rotationHordes: 'Hordes',
     rotationLoading: 'Loading rotation data...',
     rotationError: 'Could not load rotation data.',
+    rotationSheetLink: 'View the Google Sheet',
     rotationCredit: 'Source:',
   },
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { TYPE_LABELS } from '~/i18n/translations'
+import { ROTATION_CAVE_SHEET_URL } from '~/composables/useRotationCave'
 import type { RotationCaveEntry } from '~/composables/useRotationCave'
 
 const { locale, t } = useLocale()
@@ -60,7 +61,12 @@ const sections = computed<{ label: string, entries: RotationCaveEntry[] }[]>(() 
       :class="open ? 'block' : 'hidden'"
     >
       <p v-if="loading" class="text-sm text-neutral-500">{{ t.rotationLoading }}</p>
-      <p v-else-if="error || !data" class="text-sm text-neutral-500">{{ t.rotationError }}</p>
+      <template v-else-if="error || !data">
+        <p class="text-sm text-neutral-500">{{ t.rotationError }}</p>
+        <a :href="ROTATION_CAVE_SHEET_URL" target="_blank" rel="noopener" class="mt-1 inline-block text-sm text-neutral-400 underline hover:text-neutral-300">
+          {{ t.rotationSheetLink }}
+        </a>
+      </template>
 
       <template v-else>
         <div class="mb-2 flex items-center justify-between gap-2 border-b border-neutral-800 pb-2">
