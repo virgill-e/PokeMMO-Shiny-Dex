@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Zone, ZoneEntry } from '~/utils/types'
-import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS, abilityLabel } from '~/i18n/translations'
+import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS, EV_STAT_LABELS, abilityLabel } from '~/i18n/translations'
 
 const props = defineProps<{ zone: Zone }>()
 
@@ -69,6 +69,15 @@ function entryAbilities(entry: ZoneEntry) {
             :class="entry.hordeSize === 5 ? 'bg-rose-900 text-rose-200' : 'bg-sky-900 text-sky-200'"
           >
             Horde x{{ entry.hordeSize }}
+          </span>
+
+          <span
+            v-if="entry.hordeSize && entry.evYields.length"
+            class="whitespace-nowrap rounded-full bg-emerald-900 px-2 py-0.5 text-xs font-semibold text-emerald-200"
+          >
+            <span v-for="(ev, i) in entry.evYields" :key="ev.stat">
+              <span v-if="i > 0">, </span>+{{ ev.amount }} {{ EV_STAT_LABELS[locale][ev.stat] }}
+            </span>
           </span>
 
           <span class="text-xs text-neutral-400">

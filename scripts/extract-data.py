@@ -126,6 +126,20 @@ def extract_records(monsters, fr_monster, fr_locations):
         abilities = list(dict.fromkeys(regular))
         hidden = raw_abilities[2]["name"] if len(raw_abilities) > 2 and raw_abilities[2] and raw_abilities[2].get("name") not in (None, "--") else None
 
+        # Effort Value yield: the stat(s) (and amount) a defeated wild
+        # Pokemon awards, e.g. Venusaur gives 2 Sp. Atk + 1 Sp. Def. Most
+        # species yield a single stat, but some award up to 3.
+        yields = mon.get("yields") or {}
+        EV_STAT_FIELDS = [
+            ("hp", "ev_hp"), ("attack", "ev_attack"), ("defense", "ev_defense"),
+            ("speed", "ev_speed"), ("spAttack", "ev_sp_attack"), ("spDefense", "ev_sp_defense"),
+        ]
+        ev_yields = [
+            {"stat": stat, "amount": yields[field]}
+            for stat, field in EV_STAT_FIELDS
+            if yields.get(field)
+        ]
+
         for loc in mon.get("locations", []):
             location_en = loc.get("location_name_full") or loc.get("location_name")
             horde_size = 5 if loc.get("is_horde_5x") else 3 if loc.get("is_horde_3x") else None
@@ -137,6 +151,7 @@ def extract_records(monsters, fr_monster, fr_locations):
                 "types": types,
                 "abilities": abilities,
                 "hiddenAbility": hidden,
+                "evYields": ev_yields,
                 "region": loc.get("region_name"),
                 "location": location_en,
                 "locationFr": translate_location(location_en, fr_locations),

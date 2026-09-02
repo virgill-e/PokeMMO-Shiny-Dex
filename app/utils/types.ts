@@ -11,6 +11,14 @@ export interface Rarity {
 
 export type EncounterMode = 'hordes' | 'singles'
 
+export const EV_STATS = ['hp', 'attack', 'defense', 'speed', 'spAttack', 'spDefense'] as const
+export type EvStat = typeof EV_STATS[number]
+
+export interface EvYield {
+  stat: EvStat
+  amount: number
+}
+
 // hordeSize is only present on records from hordes.json; singles.json records
 // don't have it at all (regular wild encounters aren't hordes).
 export interface EncounterRecord {
@@ -20,6 +28,7 @@ export interface EncounterRecord {
   types: string[]
   abilities: string[]
   hiddenAbility: string | null
+  evYields: EvYield[]
   region: string
   location: string
   locationFr: string
@@ -42,6 +51,7 @@ export interface ZoneEntry {
   types: string[]
   abilities: string[]
   hiddenAbility: string | null
+  evYields: EvYield[]
   hordeSize?: HordeSize
   encounterType: string
   seasonRarities: SeasonRarity[]

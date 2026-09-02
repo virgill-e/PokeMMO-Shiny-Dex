@@ -99,6 +99,25 @@ export const TYPE_LABELS: Record<Locale, Record<string, string>> = {
   },
 }
 
+export const EV_STAT_LABELS: Record<Locale, Record<string, string>> = {
+  fr: {
+    hp: 'PV',
+    attack: 'Attaque',
+    defense: 'Défense',
+    speed: 'Vitesse',
+    spAttack: 'Attaque Spé.',
+    spDefense: 'Défense Spé.',
+  },
+  en: {
+    hp: 'HP',
+    attack: 'Attack',
+    defense: 'Defense',
+    speed: 'Speed',
+    spAttack: 'Sp. Atk',
+    spDefense: 'Sp. Def',
+  },
+}
+
 // No official English->French ability translation feed exists in pokemmo-hub
 // (unlike pokemon/location names), so this is hand-built from PokeAPI's fr
 // names, plus literal translations for PokeMMO-only abilities not in PokeAPI
@@ -359,6 +378,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     labelType: 'Type',
     labelAbility: 'Talent',
     hiddenAbilitySuffix: ' (caché)',
+    labelEvYield: 'Rendement EV',
     labelTimeOfDay: 'Moment',
     all: 'Toutes',
     timeOfDayAll: 'Tous',
@@ -413,6 +433,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     labelType: 'Type',
     labelAbility: 'Ability',
     hiddenAbilitySuffix: ' (hidden)',
+    labelEvYield: 'EV yield',
     labelTimeOfDay: 'Time of day',
     all: 'All',
     timeOfDayAll: 'All',
