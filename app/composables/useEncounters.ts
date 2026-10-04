@@ -1,5 +1,5 @@
-import { SEASONS } from '~/utils/types'
-import type { EncounterRecord, EncounterMode, Season, HordeSize, Zone, ZoneEntry, TimeOfDay, Sibling, Rarity, EvStat } from '~/utils/types'
+import { SEASONS, estimatedExp } from '~/utils/types'
+import type { EncounterRecord, EncounterMode, Season, HordeSize, Zone, ZoneEntry, TimeOfDay, Sibling, Rarity, EvStat, SortOption } from '~/utils/types'
 import type { Locale } from '~/i18n/translations'
 
 const PAGE_SIZE = 24
@@ -101,13 +101,14 @@ export function useEncounters() {
   const timeOfDay = useState<TimeOfDayFilter>('filter-time-of-day', () => 'all')
   const guaranteedOnly = useState('filter-guaranteed-only', () => false)
   const favoritesOnly = useState('filter-favorites-only', () => false)
+  const sortBy = useState<SortOption>('sort-by', () => 'zone')
   const visibleCount = useState('visible-zone-count', () => PAGE_SIZE)
 
   // A localized location search is meaningless once the language changes.
   watch(locale, () => { location.value = '' })
 
   // Any change of query should start back from the top of the results.
-  watch([hordeSize, season, region, location, search, pokemonType, ability, evStat, timeOfDay, guaranteedOnly, favoritesOnly], () => { visibleCount.value = PAGE_SIZE })
+  watch([hordeSize, season, region, location, search, pokemonType, ability, evStat, timeOfDay, guaranteedOnly, favoritesOnly, sortBy], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: EncounterRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -185,11 +186,13 @@ export function useEncounters() {
           abilities: r.abilities,
           hiddenAbility: r.hiddenAbility,
           evYields: r.evYields,
+          baseExp: r.baseExp,
           hordeSize: r.hordeSize,
           encounterType: r.encounterType,
           seasonRarities: [],
           minLevel: r.minLevel,
           maxLevel: r.maxLevel,
+          expEstimate: 0,
         })
       }
       const entry = zone.entries.get(entryKey)!
@@ -198,6 +201,28 @@ export function useEncounters() {
       }
       entry.minLevel = Math.min(entry.minLevel, r.minLevel)
       entry.maxLevel = Math.max(entry.maxLevel, r.maxLevel)
+    }
+
+    const byName = (a: ZoneEntry, b: ZoneEntry) => a.pokemonName.localeCompare(b.pokemonName) || a.encounterType.localeCompare(b.encounterType)
+    const byZone = (a: Zone, b: Zone) => a.region.localeCompare(b.region) || a.location.localeCompare(b.location)
+
+    // Entries inside a zone follow the chosen criterion too, so the best
+    // (or worst) encounter of each zone is the first line of its card.
+    const entryCompare: Record<SortOption, (a: ZoneEntry, b: ZoneEntry) => number> = {
+      zone: byName,
+      expDesc: (a, b) => b.expEstimate - a.expEstimate || byName(a, b),
+      expAsc: (a, b) => a.expEstimate - b.expEstimate || byName(a, b),
+      levelDesc: (a, b) => b.maxLevel - a.maxLevel || byName(a, b),
+      levelAsc: (a, b) => a.minLevel - b.minLevel || byName(a, b),
+    }
+    // A zone is ranked by its best entry for the chosen criterion (its first
+    // entry once sorted), e.g. the highest-EXP encounter for "EXP (highest)".
+    const zoneCompare: Record<SortOption, (a: Zone, b: Zone) => number> = {
+      zone: byZone,
+      expDesc: (a, b) => b.entries[0]!.expEstimate - a.entries[0]!.expEstimate || byZone(a, b),
+      expAsc: (a, b) => a.entries[0]!.expEstimate - b.entries[0]!.expEstimate || byZone(a, b),
+      levelDesc: (a, b) => b.entries[0]!.maxLevel - a.entries[0]!.maxLevel || byZone(a, b),
+      levelAsc: (a, b) => a.entries[0]!.minLevel - b.entries[0]!.minLevel || byZone(a, b),
     }
 
     let result = [...zoneMap.values()]
@@ -209,10 +234,11 @@ export function useEncounters() {
           .map(e => ({
             ...e,
             seasonRarities: [...e.seasonRarities].sort((a, b) => SEASONS.indexOf(a.season) - SEASONS.indexOf(b.season)),
+            expEstimate: estimatedExp(e.baseExp, e.minLevel, e.maxLevel, e.hordeSize),
           }))
-          .sort((a, b) => a.pokemonName.localeCompare(b.pokemonName) || a.encounterType.localeCompare(b.encounterType)),
+          .sort(entryCompare[sortBy.value]),
       }))
-      .sort((a, b) => a.region.localeCompare(b.region) || a.location.localeCompare(b.location))
+      .sort(zoneCompare[sortBy.value])
 
     if (favoritesOnly.value) {
       result = result.filter(z => isFavorite(z.region, z.locationKey))
@@ -242,6 +268,7 @@ export function useEncounters() {
     timeOfDay.value = 'all'
     guaranteedOnly.value = false
     favoritesOnly.value = false
+    sortBy.value = 'zone'
   }
 
   // Other pokemon sharing the exact same slot (zone + encounter type + horde
@@ -276,6 +303,7 @@ export function useEncounters() {
     timeOfDay,
     guaranteedOnly,
     favoritesOnly,
+    sortBy,
     zones,
     visibleZones,
     hasMoreZones,

@@ -1,5 +1,5 @@
-import { SEASONS, REGIONS, POKEMON_TYPES } from '~/utils/types'
-import type { Season, HordeSize } from '~/utils/types'
+import { SEASONS, REGIONS, POKEMON_TYPES, SORT_OPTIONS } from '~/utils/types'
+import type { Season, HordeSize, SortOption } from '~/utils/types'
 import type { TimeOfDayFilter } from '~/composables/useEncounters'
 
 const TIME_OF_DAY_VALUES = ['allday', 'morning', 'day', 'night']
@@ -9,7 +9,7 @@ const TIME_OF_DAY_VALUES = ['allday', 'morning', 'day', 'night']
 // client-only: restores from the URL once on load, then keeps it updated.
 export default defineNuxtPlugin(() => {
   const {
-    mode, hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly,
+    mode, hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly, sortBy,
   } = useEncounters()
 
   const params = new URLSearchParams(window.location.search)
@@ -40,6 +40,9 @@ export default defineNuxtPlugin(() => {
   const urlPokemon = params.get('pokemon')
   if (urlPokemon) search.value = urlPokemon
 
+  const urlSort = params.get('sort')
+  if (urlSort && (SORT_OPTIONS as readonly string[]).includes(urlSort)) sortBy.value = urlSort as SortOption
+
   function syncUrl() {
     const next = new URLSearchParams()
     if (mode.value !== 'hordes') next.set('mode', mode.value)
@@ -51,11 +54,12 @@ export default defineNuxtPlugin(() => {
     if (mode.value === 'hordes' && guaranteedOnly.value) next.set('guaranteed', '1')
     if (location.value) next.set('location', location.value)
     if (search.value) next.set('pokemon', search.value)
+    if (sortBy.value !== 'zone') next.set('sort', sortBy.value)
 
     const qs = next.toString()
     const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname
     history.replaceState(history.state, '', newUrl)
   }
 
-  watch([mode, hordeSize, season, region, pokemonType, timeOfDay, guaranteedOnly, location, search], syncUrl)
+  watch([mode, hordeSize, season, region, pokemonType, timeOfDay, guaranteedOnly, location, search, sortBy], syncUrl)
 })

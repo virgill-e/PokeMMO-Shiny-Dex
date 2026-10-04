@@ -83,6 +83,14 @@ function entryAbilities(entry: ZoneEntry) {
           <span class="text-xs text-neutral-400">
             {{ t.levelPrefix }} {{ entry.minLevel }}–{{ entry.maxLevel }}
           </span>
+
+          <span
+            v-if="entry.expEstimate"
+            class="whitespace-nowrap rounded-full bg-violet-900 px-2 py-0.5 text-xs font-semibold text-violet-200"
+            :title="t.expTooltip"
+          >
+            ~{{ entry.expEstimate.toLocaleString(locale) }} EXP
+          </span>
         </div>
 
         <div class="grid gap-x-2 gap-y-0.5 text-xs" style="grid-template-columns: 1.25rem repeat(3, 3rem)">

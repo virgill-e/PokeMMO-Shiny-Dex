@@ -2,7 +2,7 @@
 import { SEASONS, REGIONS, POKEMON_TYPES, EV_STATS } from '~/utils/types'
 import { REGION_LABELS, SEASON_LABELS, TYPE_LABELS, EV_STAT_LABELS, abilityLabel, resultCountLabel } from '~/i18n/translations'
 
-const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, ability, abilityOptions, evStat, timeOfDay, guaranteedOnly, favoritesOnly, resultCount, resetFilters } = useEncounters()
+const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, ability, abilityOptions, evStat, timeOfDay, guaranteedOnly, favoritesOnly, sortBy, resultCount, resetFilters } = useEncounters()
 const { locale, t } = useLocale()
 const shiny = useShiny()
 </script>
@@ -66,6 +66,17 @@ const shiny = useShiny()
         <option value="morning">{{ t.optionMorning }}</option>
         <option value="day">{{ t.optionDay }}</option>
         <option value="night">{{ t.optionNight }}</option>
+      </select>
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm">
+      <span class="text-neutral-400">{{ t.labelSort }}</span>
+      <select v-model="sortBy" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
+        <option value="zone">{{ t.sortZone }}</option>
+        <option value="expDesc">{{ t.sortExpDesc }}</option>
+        <option value="expAsc">{{ t.sortExpAsc }}</option>
+        <option value="levelDesc">{{ t.sortLevelDesc }}</option>
+        <option value="levelAsc">{{ t.sortLevelAsc }}</option>
       </select>
     </label>
 

@@ -19,6 +19,18 @@ export interface EvYield {
   amount: number
 }
 
+export const SORT_OPTIONS = ['zone', 'expDesc', 'expAsc', 'levelDesc', 'levelAsc'] as const
+export type SortOption = typeof SORT_OPTIONS[number]
+
+// Estimated EXP for defeating one encounter (the whole horde when there is one),
+// using the classic wild-battle formula baseExp * level / 7 at the average level
+// of the range. Ignores trainer-side modifiers (Lucky Egg, traded Pokemon, EXP
+// Share, level scaling), so it's meant for comparing zones, not exact numbers.
+export function estimatedExp(baseExp: number, minLevel: number, maxLevel: number, hordeSize?: HordeSize) {
+  const avgLevel = (minLevel + maxLevel) / 2
+  return Math.floor(baseExp * avgLevel / 7) * (hordeSize ?? 1)
+}
+
 // hordeSize is only present on records from hordes.json; singles.json records
 // don't have it at all (regular wild encounters aren't hordes).
 export interface EncounterRecord {
@@ -29,6 +41,7 @@ export interface EncounterRecord {
   abilities: string[]
   hiddenAbility: string | null
   evYields: EvYield[]
+  baseExp: number
   region: string
   location: string
   locationFr: string
@@ -52,11 +65,13 @@ export interface ZoneEntry {
   abilities: string[]
   hiddenAbility: string | null
   evYields: EvYield[]
+  baseExp: number
   hordeSize?: HordeSize
   encounterType: string
   seasonRarities: SeasonRarity[]
   minLevel: number
   maxLevel: number
+  expEstimate: number
 }
 
 export interface Zone {
