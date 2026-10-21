@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Zone, ZoneEntry } from '~/utils/types'
-import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS, EV_STAT_LABELS, abilityLabel } from '~/i18n/translations'
+import { SEASON_ICONS, ENCOUNTER_TYPE_LABELS, ENCOUNTER_TYPE_ICONS, EV_STAT_LABELS, abilityLabel, eggGroupLabel } from '~/i18n/translations'
 
 const props = defineProps<{ zone: Zone }>()
 
@@ -56,6 +56,9 @@ function entryAbilities(entry: ZoneEntry) {
               <span v-for="(ab, i) in entryAbilities(entry)" :key="ab.name">
                 <span v-if="i > 0">, </span>{{ abilityLabel(locale, ab.name) }}<span v-if="ab.hidden">{{ t.hiddenAbilitySuffix }}</span>
               </span>
+            </p>
+            <p v-if="entry.eggGroups.length" class="mt-0.5 text-xs text-neutral-500">
+              🥚 {{ entry.eggGroups.map(eg => eggGroupLabel(locale, eg)).join(', ') }}
             </p>
           </div>
 

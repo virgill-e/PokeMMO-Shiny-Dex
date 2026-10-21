@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { SEASONS, REGIONS, POKEMON_TYPES, EV_STATS } from '~/utils/types'
-import { REGION_LABELS, SEASON_LABELS, TYPE_LABELS, EV_STAT_LABELS, abilityLabel, resultCountLabel } from '~/i18n/translations'
+import { SEASONS, REGIONS, POKEMON_TYPES, EV_STATS, EGG_GROUPS } from '~/utils/types'
+import { REGION_LABELS, SEASON_LABELS, TYPE_LABELS, EV_STAT_LABELS, abilityLabel, eggGroupLabel, resultCountLabel } from '~/i18n/translations'
 
-const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, ability, abilityOptions, evStat, timeOfDay, guaranteedOnly, favoritesOnly, sortBy, resultCount, resetFilters } = useEncounters()
+const { mode, hordeSize, season, region, location, locationOptions, search, pokemonType, ability, abilityOptions, evStat, eggGroup, timeOfDay, guaranteedOnly, favoritesOnly, sortBy, resultCount, resetFilters } = useEncounters()
 const { locale, t } = useLocale()
 const shiny = useShiny()
 </script>
@@ -47,6 +47,14 @@ const shiny = useShiny()
       <select v-model="ability" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
         <option value="all">{{ t.all }}</option>
         <option v-for="ab in abilityOptions" :key="ab" :value="ab">{{ abilityLabel(locale, ab) }}</option>
+      </select>
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm">
+      <span class="text-neutral-400">{{ t.labelEggGroup }}</span>
+      <select v-model="eggGroup" class="rounded border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-neutral-100">
+        <option value="all">{{ t.all }}</option>
+        <option v-for="eg in EGG_GROUPS" :key="eg" :value="eg">{{ eggGroupLabel(locale, eg) }}</option>
       </select>
     </label>
 

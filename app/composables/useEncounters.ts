@@ -98,6 +98,7 @@ export function useEncounters() {
   const pokemonType = useState<'all' | string>('filter-type', () => 'all')
   const ability = useState<'all' | string>('filter-ability', () => 'all')
   const evStat = useState<'all' | EvStat>('filter-ev-stat', () => 'all')
+  const eggGroup = useState<'all' | string>('filter-egg-group', () => 'all')
   const timeOfDay = useState<TimeOfDayFilter>('filter-time-of-day', () => 'all')
   const guaranteedOnly = useState('filter-guaranteed-only', () => false)
   const favoritesOnly = useState('filter-favorites-only', () => false)
@@ -108,7 +109,7 @@ export function useEncounters() {
   watch(locale, () => { location.value = '' })
 
   // Any change of query should start back from the top of the results.
-  watch([hordeSize, season, region, location, search, pokemonType, ability, evStat, timeOfDay, guaranteedOnly, favoritesOnly, sortBy], () => { visibleCount.value = PAGE_SIZE })
+  watch([hordeSize, season, region, location, search, pokemonType, ability, evStat, eggGroup, timeOfDay, guaranteedOnly, favoritesOnly, sortBy], () => { visibleCount.value = PAGE_SIZE })
 
   function pokemonName(r: EncounterRecord) {
     return locale.value === 'fr' ? r.pokemonNameFr : r.pokemonName
@@ -141,6 +142,7 @@ export function useEncounters() {
     if (pokemonType.value !== 'all' && !r.types.includes(pokemonType.value)) return false
     if (ability.value !== 'all' && !r.abilities.includes(ability.value) && r.hiddenAbility !== ability.value) return false
     if (mode.value === 'hordes' && evStat.value !== 'all' && !r.evYields.some(y => y.stat === evStat.value)) return false
+    if (eggGroup.value !== 'all' && !r.eggGroups.includes(eggGroup.value)) return false
 
     if (timeOfDay.value === 'allday') {
       if (r.rarity.morning === '--' || r.rarity.day === '--' || r.rarity.night === '--') return false
@@ -187,6 +189,7 @@ export function useEncounters() {
           hiddenAbility: r.hiddenAbility,
           evYields: r.evYields,
           baseExp: r.baseExp,
+          eggGroups: r.eggGroups,
           hordeSize: r.hordeSize,
           encounterType: r.encounterType,
           seasonRarities: [],
@@ -265,6 +268,7 @@ export function useEncounters() {
     pokemonType.value = 'all'
     ability.value = 'all'
     evStat.value = 'all'
+    eggGroup.value = 'all'
     timeOfDay.value = 'all'
     guaranteedOnly.value = false
     favoritesOnly.value = false
@@ -300,6 +304,7 @@ export function useEncounters() {
     ability,
     abilityOptions,
     evStat,
+    eggGroup,
     timeOfDay,
     guaranteedOnly,
     favoritesOnly,

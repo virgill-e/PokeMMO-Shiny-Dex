@@ -19,6 +19,12 @@ export interface EvYield {
   amount: number
 }
 
+// PokeMMO egg group keys as found in the data (lowercase), in display order.
+export const EGG_GROUPS = [
+  'monster', 'water a', 'water b', 'water c', 'bug', 'flying', 'field', 'fairy',
+  'plant', 'humanoid', 'mineral', 'chaos', 'dragon', 'ditto', 'genderless', 'cannot breed',
+] as const
+
 export const SORT_OPTIONS = ['zone', 'expDesc', 'expAsc', 'levelDesc', 'levelAsc'] as const
 export type SortOption = typeof SORT_OPTIONS[number]
 
@@ -42,6 +48,7 @@ export interface EncounterRecord {
   hiddenAbility: string | null
   evYields: EvYield[]
   baseExp: number
+  eggGroups: string[]
   region: string
   location: string
   locationFr: string
@@ -66,6 +73,7 @@ export interface ZoneEntry {
   hiddenAbility: string | null
   evYields: EvYield[]
   baseExp: number
+  eggGroups: string[]
   hordeSize?: HordeSize
   encounterType: string
   seasonRarities: SeasonRarity[]

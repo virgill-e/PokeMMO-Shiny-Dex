@@ -1,4 +1,4 @@
-import { SEASONS, REGIONS, POKEMON_TYPES, SORT_OPTIONS } from '~/utils/types'
+import { SEASONS, REGIONS, POKEMON_TYPES, SORT_OPTIONS, EGG_GROUPS } from '~/utils/types'
 import type { Season, HordeSize, SortOption } from '~/utils/types'
 import type { TimeOfDayFilter } from '~/composables/useEncounters'
 
@@ -9,7 +9,7 @@ const TIME_OF_DAY_VALUES = ['allday', 'morning', 'day', 'night']
 // client-only: restores from the URL once on load, then keeps it updated.
 export default defineNuxtPlugin(() => {
   const {
-    mode, hordeSize, season, region, location, search, pokemonType, timeOfDay, guaranteedOnly, sortBy,
+    mode, hordeSize, season, region, location, search, pokemonType, eggGroup, timeOfDay, guaranteedOnly, sortBy,
   } = useEncounters()
 
   const params = new URLSearchParams(window.location.search)
@@ -28,6 +28,9 @@ export default defineNuxtPlugin(() => {
 
   const urlType = params.get('type')
   if (urlType && (POKEMON_TYPES as readonly string[]).includes(urlType)) pokemonType.value = urlType
+
+  const urlEgg = params.get('egg')
+  if (urlEgg && (EGG_GROUPS as readonly string[]).includes(urlEgg)) eggGroup.value = urlEgg
 
   const urlTime = params.get('time')
   if (urlTime && TIME_OF_DAY_VALUES.includes(urlTime)) timeOfDay.value = urlTime as TimeOfDayFilter
@@ -50,6 +53,7 @@ export default defineNuxtPlugin(() => {
     if (season.value !== 'all') next.set('season', season.value)
     if (region.value !== 'all') next.set('region', region.value)
     if (pokemonType.value !== 'all') next.set('type', pokemonType.value)
+    if (eggGroup.value !== 'all') next.set('egg', eggGroup.value)
     if (timeOfDay.value !== 'all') next.set('time', timeOfDay.value)
     if (mode.value === 'hordes' && guaranteedOnly.value) next.set('guaranteed', '1')
     if (location.value) next.set('location', location.value)
@@ -61,5 +65,5 @@ export default defineNuxtPlugin(() => {
     history.replaceState(history.state, '', newUrl)
   }
 
-  watch([mode, hordeSize, season, region, pokemonType, timeOfDay, guaranteedOnly, location, search, sortBy], syncUrl)
+  watch([mode, hordeSize, season, region, pokemonType, eggGroup, timeOfDay, guaranteedOnly, location, search, sortBy], syncUrl)
 })

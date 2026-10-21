@@ -141,6 +141,8 @@ def extract_records(monsters, fr_monster, fr_locations):
         ]
         # Base experience yield, the species constant used by the EXP formula.
         base_exp = yields.get("exp") or 0
+        # Lowercase PokeMMO names ("water a", "chaos", "cannot breed", ...).
+        egg_groups = mon.get("egg_groups") or []
 
         for loc in mon.get("locations", []):
             location_en = loc.get("location_name_full") or loc.get("location_name")
@@ -155,6 +157,7 @@ def extract_records(monsters, fr_monster, fr_locations):
                 "hiddenAbility": hidden,
                 "evYields": ev_yields,
                 "baseExp": base_exp,
+                "eggGroups": egg_groups,
                 "region": loc.get("region_name"),
                 "location": location_en,
                 "locationFr": translate_location(location_en, fr_locations),

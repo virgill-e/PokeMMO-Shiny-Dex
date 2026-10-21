@@ -343,6 +343,49 @@ export function abilityLabel(locale: Locale, name: string) {
   return ABILITY_LABELS[locale][name] ?? name
 }
 
+export const EGG_GROUP_LABELS: Record<Locale, Record<string, string>> = {
+  fr: {
+    'monster': 'Monstre',
+    'water a': 'Aquatique A',
+    'water b': 'Aquatique B',
+    'water c': 'Aquatique C',
+    'bug': 'Insectoïde',
+    'flying': 'Aérien',
+    'field': 'Terrestre',
+    'fairy': 'Féerique',
+    'plant': 'Végétal',
+    'humanoid': 'Humanoïde',
+    'mineral': 'Minéral',
+    'chaos': 'Amorphe',
+    'dragon': 'Draconique',
+    'ditto': 'Métamorph',
+    'genderless': 'Asexué',
+    'cannot breed': 'Ne peut pas se reproduire',
+  },
+  en: {
+    'monster': 'Monster',
+    'water a': 'Water A',
+    'water b': 'Water B',
+    'water c': 'Water C',
+    'bug': 'Bug',
+    'flying': 'Flying',
+    'field': 'Field',
+    'fairy': 'Fairy',
+    'plant': 'Plant',
+    'humanoid': 'Humanoid',
+    'mineral': 'Mineral',
+    'chaos': 'Chaos',
+    'dragon': 'Dragon',
+    'ditto': 'Ditto',
+    'genderless': 'Genderless',
+    'cannot breed': 'Cannot breed',
+  },
+}
+
+export function eggGroupLabel(locale: Locale, key: string) {
+  return EGG_GROUP_LABELS[locale][key] ?? key
+}
+
 export const ENCOUNTER_TYPE_ICONS: Record<string, string> = {
   Grass: '🌿',
   'Dark Grass': '🌾',
@@ -379,6 +422,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     labelAbility: 'Talent',
     hiddenAbilitySuffix: ' (caché)',
     labelEvYield: 'Rendement EV',
+    labelEggGroup: "Groupe d'œuf",
     labelTimeOfDay: 'Moment',
     labelSort: 'Trier par',
     sortZone: 'Région / zone (A→Z)',
@@ -441,6 +485,7 @@ export const UI_TEXT: Record<Locale, Record<string, string>> = {
     labelAbility: 'Ability',
     hiddenAbilitySuffix: ' (hidden)',
     labelEvYield: 'EV yield',
+    labelEggGroup: 'Egg group',
     labelTimeOfDay: 'Time of day',
     labelSort: 'Sort by',
     sortZone: 'Region / zone (A→Z)',
