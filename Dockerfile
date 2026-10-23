@@ -16,5 +16,9 @@ ENV NODE_ENV=production \
 
 COPY --from=build /app/.output ./.output
 
+# Unprivileged user shipped with the official node image. The server only
+# reads .output (left owned by root, so it can't be modified at runtime).
+USER node
+
 EXPOSE 3000
 CMD ["node", ".output/server/index.mjs"]
